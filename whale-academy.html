@@ -2,317 +2,412 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>고래 영어학원 거리</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>고래영어학원의 하루</title>
 <style>
-  :root { --bg:#f3eee3; --wall:#f7f2e7; --plate:#fbf8ef; --ink:#2b2724; --roofA:#7a4a3a; --roofB:#3f5f60; --roofC:#5c6670;
-          --street:#efe6d6; --winOff:#efe9dc; --winLit:#f3ecd9; --bus:#e0b030; --bri:1; }
-  html,body { margin:0; min-height:100%; background:#e9e6df; }
-  body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:12px;
-         font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; padding:12px 0; box-sizing:border-box; }
-  svg { width:100%; max-width:1100px; height:auto; touch-action:manipulation; user-select:none; -webkit-user-select:none;
-        filter:drop-shadow(0 10px 18px rgba(60,50,40,.22)); }
-  .o { stroke:var(--ink); stroke-width:1; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke; }
-  .l { fill:none; stroke:var(--ink); stroke-width:.8; stroke-linecap:round; vector-effect:non-scaling-stroke; }
-  .wall{fill:var(--wall)} .plate{fill:var(--plate)} .rA{fill:var(--roofA)} .rB{fill:var(--roofB)} .rC{fill:var(--roofC)}
-  .wl{fill:var(--winLit)} .wo{fill:var(--winOff)} .ink{fill:var(--ink);stroke:none}
-  .sgt { font-family:Georgia,"Noto Serif KR","Times New Roman",serif; font-weight:700; text-anchor:middle; fill:var(--ink); letter-spacing:.5px; }
-  #label { font-family:Georgia,"Noto Serif KR",serif; font-size:11px; font-weight:700; fill:var(--ink); }
-  .hit { cursor:pointer; }
-  .people { filter:brightness(var(--bri)); }
-  .cloud { animation:drift 80s linear infinite alternate; opacity:.55; }
-  .cloud.b { animation-duration:110s; animation-direction:alternate-reverse; }
-  @keyframes drift { from{transform:translateX(-40px)} to{transform:translateX(70px)} }
-  #bubble { opacity:0; transition:opacity .25s; pointer-events:none; }
-  #bubble text { font-size:10px; text-anchor:middle; font-weight:600; fill:var(--ink); }
-  #ctl { display:flex; align-items:center; gap:10px; width:min(560px,90%); color:#6b645a; font-size:13px; }
-  #ctl input { flex:1; accent-color:#7a4a3a; }
-  #ctl button { border:1px solid #bfb8aa; background:#f7f3ea; border-radius:8px; padding:4px 12px; cursor:pointer; font-size:14px; }
+  :root { color-scheme: light; }
+  html,body { margin:0; background:#e8e5de; }
+  body { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+         font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; -webkit-text-size-adjust:100%; }
+  #stage { position:relative; width:min(100vw, 1100px); aspect-ratio:16/9; container-type:inline-size; overflow:hidden; background:#cfe2ea;
+           --ink:#4b4741; --cap:rgba(255,255,255,.78); --capInk:#3b3732; }
+  @media (min-width:1120px){ #stage { border-radius:14px; box-shadow:0 10px 30px rgba(60,50,40,.2);} }
+  svg { position:absolute; inset:0; width:100%; height:100%; display:block; }
+  .o  { fill:none; stroke:var(--ink); stroke-width:1; stroke-linecap:round; stroke-linejoin:round; }
+  .lo { opacity:.5; }
+  .win { cursor:pointer; outline:none; }
+  .win .hit { fill:transparent; }
+  .win:hover .fr, .win:focus-visible .fr, .win.sel .fr { stroke:#b8704a; stroke-width:2; }
+  .sgn { font-weight:800; font-size:19px; text-anchor:middle; fill:var(--signInk); letter-spacing:1px; }
+  /* overlays (real text, not baked into the art) */
+  #tag { position:absolute; left:3cqw; top:2.4cqw; color:var(--ink); pointer-events:none; transition:opacity .3s; }
+  #tag b { display:block; font-size:2.2cqw; font-weight:700; letter-spacing:.02em; }
+  #tag small { display:block; font-size:1.3cqw; opacity:.65; margin-top:.2cqw; }
+  #cap { position:absolute; left:50%; bottom:2.6cqw; transform:translateX(-50%); max-width:86%; padding:.7cqw 2cqw; border-radius:2cqw;
+         background:var(--cap); color:var(--capInk); font-size:2.3cqw; font-weight:600; white-space:nowrap; pointer-events:none; opacity:0; }
+  #scrim { position:absolute; left:0; right:0; bottom:0; height:38%; background:linear-gradient(to top, rgba(14,20,46,.78), rgba(14,20,46,0)); opacity:0; pointer-events:none; }
+  #fin { position:absolute; left:0; right:0; bottom:3cqw; text-align:center; color:#f6efdc; opacity:0; pointer-events:none; }
+  #fin h1 { margin:0; font-size:4cqw; font-weight:800; letter-spacing:.08em; }
+  #fin p  { margin:.5cqw 0 0; font-size:2cqw; font-weight:500; }
+  #fin small { display:block; margin-top:.6cqw; font-size:1.4cqw; opacity:.7; }
+  /* controls */
+  #ctl { display:flex; align-items:center; gap:10px; width:min(100vw - 24px, 640px); color:#6b645a; font-size:12px; padding-bottom:max(8px, env(safe-area-inset-bottom)); }
+  #ctl button { border:1px solid #c4bdb0; background:#f7f3ea; color:#4b4741; border-radius:8px; width:34px; height:28px; font-size:13px; line-height:1; cursor:pointer; padding:0; }
+  #ctl .txt { width:auto; padding:0 8px; font-size:11px; }
+  #ctl input { flex:1; accent-color:#8a6a55; min-width:0; }
+  #tm { min-width:64px; text-align:right; font-variant-numeric:tabular-nums; }
+  body.clean #ctl { display:none; }
+  body.clean { cursor:none; }
+  #uihit { position:fixed; right:0; bottom:0; width:44px; height:44px; display:none; }
+  body.clean #uihit { display:block; }
 </style>
 </head>
 <body>
-<svg id="s" viewBox="0 0 800 460" aria-label="고래 영어학원 거리 선화 애니메이션">
+<div id="stage">
+<svg id="s" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" aria-label="고래영어학원의 하루">
   <defs>
-    <clipPath id="card"><rect x="16" y="16" width="768" height="428" rx="14"/></clipPath>
-    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
-    <symbol id="wh" viewBox="0 0 24 12"><path d="M1.5 8 C1.5 3 8 1 13 2 C16 2.5 18 4 19.5 5 C20.5 3 22.5 1.5 23.5 2 C23 4.5 22 6 20.5 7 C22 7.5 23 9 23.5 10.5 C21.5 10.5 20 9.5 19 8.5 C16 11 8 12 1.5 8 Z" fill="var(--wall)" stroke="var(--ink)" stroke-width="1" stroke-linejoin="round"/><circle cx="6" cy="6" r=".9" fill="var(--ink)"/></symbol>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient>
+    <clipPath id="c0"><rect x="259" y="221" width="82" height="90"/></clipPath>
+    <clipPath id="c1"><rect x="359" y="221" width="82" height="90"/></clipPath>
+    <clipPath id="c2"><rect x="459" y="221" width="82" height="90"/></clipPath>
+    <symbol id="wh" viewBox="0 0 28 14"><path d="M2 9.5 C2 5 7 3.2 12 3.6 C16 4 19 6 21 8.5 C22 6.5 24 5 26.5 5.5 C26 8 25 9.5 23.5 10.5 C20.5 13.5 12 14 7 13 C4 12.5 2 11 2 9.5 Z" fill="var(--sign)" stroke="var(--ink)" stroke-width=".9" stroke-linejoin="round"/><path d="M5 10.5 q7 2 13 -.5" fill="none" stroke="var(--ink)" stroke-width=".6"/><path d="M10 3.6 q-.5 -2 -3 -2.6 M10 3.6 q.5 -2 3 -2.6" fill="none" stroke="var(--ink)" stroke-width=".8" stroke-linecap="round"/><circle cx="6.2" cy="8" r=".9" fill="var(--ink)"/></symbol>
   </defs>
-  <rect x="16" y="16" width="768" height="428" rx="14" fill="var(--bg)"/>
-  <g clip-path="url(#card)">
-    <g id="stars"></g>
-    <g id="sunmoon"></g>
-    <g id="clouds">
-      <g class="cloud"><path class="l" d="M90 70 q8 -9 18 -4 q8 -11 22 -2 q12 -4 14 6 M80 78 H150"/></g>
-      <g class="cloud b"><path class="l" d="M560 52 q8 -9 18 -4 q8 -11 22 -2 q12 -4 14 6 M552 60 H620"/></g>
-      <g class="cloud b"><path class="l" d="M420 96 h60 M436 103 h38"/></g>
-    </g>
-    <g id="bld"></g>
-    <!-- street -->
-    <rect x="16" y="360" width="768" height="90" fill="var(--street)"/>
-    <path class="l" d="M16 360 H784 M16 376 H784"/>
-    <path class="l" style="opacity:.5" d="M16 408 H70 M110 408 H170 M210 408 H270 M310 408 H370 M410 408 H470 M510 408 H570 M610 408 H670 M710 408 H784 M40 428 H120 M300 432 H400 M600 428 H700"/>
-    <g id="glows" filter="url(#blur)"></g>
-    <!-- street lamps -->
-    <g id="lamps"></g>
-    <g id="tree"></g>
-    <g id="people" class="people"></g>
-    <g id="vehicles" class="people"></g>
-    <g id="bubble">
-      <rect id="bb" class="plate o" x="-44" y="-22" width="88" height="22" rx="10"/>
-      <path class="plate o" d="M-5 0 L0 7 L5 0"/>
-      <text id="bt" y="-7"></text>
-    </g>
-    <text id="label" x="34" y="42"></text>
+
+  <rect width="800" height="450" fill="url(#sky)"/>
+  <g id="stars"></g>
+  <g id="celestial"><circle id="cel" cx="700" cy="64" r="13" style="fill:var(--cel)"/><circle id="crs" cx="705" cy="61" r="11.5" style="fill:var(--sky1)" opacity="0"/></g>
+  <g class="o" style="stroke:var(--cloud)" opacity=".55"><path d="M90 78 q8 -9 18 -4 q8 -11 22 -2 q12 -4 14 6 M80 86 H150"/><path d="M470 52 q8 -9 18 -4 q8 -11 22 -2 q12 -4 14 6 M462 60 H530"/></g>
+
+  <!-- far alleys (very low contrast) -->
+  <g class="lo">
+    <rect x="-10" y="262" width="44" height="118" style="fill:var(--side)" opacity=".7"/>
+    <rect x="766" y="270" width="50" height="110" style="fill:var(--side)" opacity=".7"/>
+    <path class="o" d="M-10 262 H34 M34 262 V380 M766 270 H816 M766 270 V380"/>
+    <path class="o" d="M10 296 v22 M20 296 v22 M786 300 v20 M798 300 v20"/>
   </g>
+
+  <!-- LEFT side building (muted) -->
+  <g id="sideL" class="lo">
+    <rect x="34" y="252" width="198" height="128" style="fill:var(--side)"/>
+    <rect x="30" y="244" width="206" height="9" style="fill:var(--sideRoof)"/>
+    <path class="o" d="M34 252 V380 M232 252 V380 M30 244 H236 V253 H30 Z"/>
+    <g style="fill:var(--sideWin)"><rect class="o" x="50" y="268" width="34" height="28"/><rect class="o" x="100" y="268" width="34" height="28"/><rect class="o" x="150" y="268" width="34" height="28"/>
+      <rect id="swL" class="o" x="50" y="312" width="34" height="28"/><rect class="o" x="100" y="312" width="34" height="28"/><rect class="o" x="150" y="312" width="34" height="28"/></g>
+    <path class="o" d="M67 268 v28 M117 268 v28 M167 268 v28 M67 312 v28 M117 312 v28 M167 312 v28"/>
+    <rect class="o" x="196" y="324" width="28" height="56" style="fill:var(--sideRoof)"/>
+  </g>
+  <!-- RIGHT side building (muted) -->
+  <g id="sideR" class="lo">
+    <rect x="568" y="262" width="198" height="118" style="fill:var(--side)"/>
+    <path class="o" style="fill:var(--sideRoof)" d="M562 262 L580 238 H754 L772 262 Z"/>
+    <path class="o" d="M568 262 V380 M766 262 V380"/>
+    <g style="fill:var(--sideWin)"><rect class="o" x="584" y="276" width="36" height="30"/><rect id="swR" class="o" x="640" y="276" width="36" height="30"/><rect class="o" x="696" y="276" width="36" height="30"/></g>
+    <path class="o" d="M602 276 v30 M658 276 v30 M714 276 v30"/>
+    <g id="awnR"></g>
+    <rect class="o" x="584" y="328" width="60" height="52" style="fill:var(--sideWin)"/><rect class="o" x="700" y="326" width="32" height="54" style="fill:var(--sideRoof)"/>
+  </g>
+
+  <!-- ACADEMY -->
+  <g id="acad">
+    <path class="o" style="fill:var(--roof)" d="M232 142 L268 104 H532 L568 142 Z"/>
+    <g id="roofLines" class="o" opacity=".35"></g>
+    <rect x="240" y="142" width="320" height="238" style="fill:var(--wall)" class="o"/>
+    <rect x="228" y="140" width="344" height="9" style="fill:var(--roof)" class="o"/>
+    <rect id="eave" x="240" y="149" width="320" height="6" style="fill:var(--shadow)" opacity=".12"/>
+    <!-- sign -->
+    <rect x="296" y="158" width="208" height="36" rx="3" style="fill:var(--sign)" class="o"/>
+    <rect x="300" y="162" width="200" height="28" rx="2" class="o" opacity=".5"/>
+    <use href="#wh" x="306" y="167" width="40" height="20"/>
+    <text id="signText" class="sgn" x="426" y="183">고래영어학원</text>
+    <path class="o" d="M240 205 H560" opacity=".6"/>
+    <path class="o" d="M240 330 H560" opacity=".6"/>
+    <!-- windows built by JS -->
+    <g id="wins"></g>
+    <!-- ground floor -->
+    <g id="ground"></g>
+  </g>
+
+  <!-- sidewalk -->
+  <rect x="0" y="380" width="800" height="52" style="fill:var(--pave)"/>
+  <rect x="0" y="432" width="800" height="18" style="fill:var(--road)"/>
+  <path class="o" d="M0 380 H800 M0 432 H800" />
+  <g id="joints" class="o" opacity=".22"></g>
+  <polygon id="shBld" style="fill:var(--shadow)" opacity=".1" points="240,380 560,380 560,394 240,394"/>
+  <g id="shLamps" class="o" style="stroke:var(--shadow)" opacity=".1"></g>
+  <ellipse id="pool" cx="500" cy="394" rx="46" ry="7" fill="#f6c777" opacity="0"/>
+
+  <!-- lamps & planters -->
+  <g id="lamps"></g>
+  <g id="planters"></g>
+  <rect id="shade" width="800" height="450" fill="transparent" pointer-events="none"/>
 </svg>
-<div id="ctl"><button id="pp" aria-label="재생/일시정지">⏸</button><input id="rng" type="range" min="0" max="24" step="0.01" value="9"><span id="hh"></span></div>
+
+<div id="tag"><b id="tagT"></b><small>장면 연출용 시각</small></div>
+<div id="cap"></div>
+<div id="scrim"></div>
+<div id="fin"><h1>고래영어학원</h1><p>수업은 선생님과 직접, 복습은 집에서 내 앱으로</p><small>교육청 등록 2019-14호</small></div>
+</div>
+
+<div id="ctl">
+  <button id="pp" aria-label="재생/일시정지">⏸</button>
+  <input id="rng" type="range" min="0" max="22" step="0.01" value="0" aria-label="시간">
+  <span id="tm">0:00 / 0:22</span>
+  <button id="hide" class="txt" aria-label="조작 숨기기">숨김</button>
+</div>
+<div id="uihit" aria-hidden="true"></div>
 
 <script>
 const $ = id => document.getElementById(id);
-const svg = $('s');
-const rnd = (a, b) => a + Math.random()*(b-a);
-const GROUND = 360;
-
-/* ================= BUILDINGS ================= */
-let B = '', GL = '';
-const win = (x, y, w, h, lit = Math.random() < .55) => {
-  if (lit) GL += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f3bd6e"/>`;
-  return `<rect class="${lit?'wl':'wo'} o" x="${x}" y="${y}" width="${w}" height="${h}"/>
-          <path class="l" d="M${x+w/2} ${y}V${y+h}M${x} ${y+h*.45}H${x+w}"/><path class="o plate" d="M${x-2} ${y+h}h${w+4}v3h-${w+4}z"/>`;
-};
-const sign = (x, y, w, h, text, size, icon) => `<rect class="plate o" x="${x}" y="${y}" width="${w}" height="${h}"/>` +
-  (icon ? `<use href="#wh" x="${x+4}" y="${y+h/2-4.5}" width="16" height="8"/>` : '') +
-  `<text class="sgt" x="${x + w/2 + (icon?9:0)}" y="${y + h/2 + size*.36}" font-size="${size}">${text}</text>`;
-function gable(xl, xr, top, bot, slant, cls) {
-  let s = `<path class="${cls} o" d="M${xl} ${bot} L${xl+slant} ${top} H${xr-slant} L${xr} ${bot} Z"/>`;
-  for (let y = top + 5; y < bot; y += 5) { const k = (y-top)/(bot-top); s += `<path class="l" style="opacity:.3" d="M${xl+slant*(1-k)+2} ${y} H${xr-slant*(1-k)-2}"/>`; }
-  return s;
-}
-const board = (x, y, w, h, t) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="var(--roofB)" class="o"/><text class="sgt" x="${x+w/2}" y="${y+h/2+3}" font-size="8" style="fill:#f3efe4;font-weight:600">${t}</text>`;
-const books = (x, y, w) => { let s = '', cols = ['#a5483c','#3f6a73','#c79a3b','#5d5a86','#7a4a3a']; for (let i = 0; i < w; i += 5) { const h = 9 + (i*7)%6; s += `<rect x="${x+i}" y="${y-h}" width="4" height="${h}" fill="${cols[(i/5)%5|0]}" stroke="var(--ink)" stroke-width=".5"/>`; } return s + `<path class="l" d="M${x-1} ${y} h${w+2}"/>`; };
-
-// ---- A: beginner house (brown roof, dormer)
-B += `<rect class="wall o" x="24" y="208" width="150" height="152"/>`;
-B += gable(16, 182, 176, 208, 28, 'rA');
-B += `<rect class="wall o" x="88" y="164" width="34" height="26"/><path class="rA o" d="M84 166 L105 148 L126 166 Z"/>` + win(98, 168, 14, 18);
-B += win(40, 220, 40, 28) + win(112, 220, 40, 28) + win(40, 258, 40, 28) + win(112, 258, 40, 28);
-B += sign(34, 294, 130, 16, 'BEGINNER · 초급반', 8.5, true);
-B += `<rect class="wl o" x="34" y="318" width="78" height="40"/>` + board(42, 324, 34, 20, 'A B C') + `<path class="l" d="M44 354 h60 M82 332 q10 -8 18 0 v14 h-18 z"/>`;
-B += `<rect class="plate o" x="122" y="320" width="30" height="40"/><path class="l" d="M137 320 V360 M122 336 H152"/><circle class="ink" cx="132" cy="342" r="1.6"/>`;
-
-// ---- B: main academy (tallest, clock tower)
-B += `<rect class="wall o" x="180" y="120" width="196" height="240"/><rect class="rC o" x="174" y="110" width="208" height="10"/>`;
-B += `<rect class="wall o" x="262" y="78" width="40" height="32"/><path class="rB o" d="M258 78 L282 60 L306 78 Z"/>`;
-B += `<circle class="plate o" cx="282" cy="94" r="10"/><path class="l" d="M282 94 V88 M282 94 L287 97"/><path class="l" d="M282 60 V52"/>`;
-B += `<g id="vane" class="hit"><rect x="268" y="40" width="28" height="16" fill="transparent"/><use href="#wh" x="270" y="42" width="24" height="12"/></g>`;
-B += sign(196, 126, 164, 20, '고래 영어학원', 13);
-[152, 190, 228].forEach(y => [198, 256, 314].forEach(x => B += win(x, y, 46, 30)));
-B += sign(226, 264, 124, 14, 'WHALE ENGLISH ACADEMY', 6.8);
-B += `<rect class="wl o" x="192" y="284" width="58" height="72"/>` + board(198, 290, 46, 26, 'Hello!') + `<path class="l" d="M200 346 h42 M206 346 v-14 h30 v14"/>`;
-B += `<path class="wl o" d="M258 360 V314 Q258 292 278 292 Q298 292 298 314 V360 Z"/><path class="l" d="M278 292 V360 M258 330 H298"/><circle class="ink" cx="274" cy="336" r="1.4"/><circle class="ink" cx="282" cy="336" r="1.4"/>`;
-B += `<rect class="wl o" x="308" y="284" width="56" height="72"/>` + books(314, 312, 44) + books(314, 334, 44) + books(314, 352, 44);
-B += `<path class="l" d="M376 300 h6"/><circle class="plate o" cx="388" cy="300" r="9"/><use href="#wh" x="381" y="296" width="14" height="7"/>`;
-
-// ---- C: speaking cafe (teal roof, awning)
-B += `<rect class="wall o" x="382" y="190" width="150" height="170"/>`;
-B += gable(376, 538, 160, 190, 26, 'rB');
-B += win(398, 202, 44, 32) + win(472, 202, 44, 32) + win(398, 246, 44, 32) + win(472, 246, 44, 32);
-B += sign(394, 286, 124, 15, 'SPEAKING · CAFÉ', 8);
-B += `<rect class="wl o" x="392" y="324" width="92" height="34"/><path class="l" d="M412 324 V334 M412 334 a6 4 0 0 0 12 0 M450 324 V332 M444 332 h12 l-3 6 h-6 z"/>` + `<path class="o plate" d="M394 352 h86"/><rect x="460" y="344" width="6" height="8" fill="#c79a3b" class="o"/><rect x="470" y="346" width="6" height="6" fill="#a5483c" class="o"/>`;
-for (let i = 0; i < 7; i++) B += `<path class="o ${i%2?'plate':'rB'}" d="M${388+i*14.5} 306 h14.5 l${1+i*0.3-0.3} 14 h-14.5 z"/>`;
-B += `<rect class="plate o" x="492" y="320" width="32" height="40"/><path class="l" d="M508 320 V360 M492 338 H524"/><circle class="ink" cx="503" cy="342" r="1.6"/>`;
-
-// ---- D: library (modern, glass)
-B += `<rect class="wall o" x="536" y="140" width="140" height="220"/><rect class="rC o" x="530" y="132" width="152" height="8"/><rect class="rC o" x="600" y="122" width="22" height="10"/><path class="l" d="M606 122 v-6 M616 122 v-9"/>`;
-[150, 182].forEach(y => { B += `<rect class="wo o" x="548" y="${y}" width="116" height="26"/><path class="l" d="M577 ${y} v26 M606 ${y} v26 M635 ${y} v26"/>`; GL += `<rect x="550" y="${y+2}" width="112" height="22" fill="#9fd6e8" opacity=".5"/>`; });
-B += sign(552, 216, 108, 16, 'LIBRARY · 도서관', 8.5, true) + sign(566, 238, 80, 12, 'OPEN 24H', 6.5);
-B += `<rect class="wo o" x="548" y="266" width="38" height="94"/><rect class="wl o" x="590" y="266" width="38" height="94"/><rect class="wo o" x="632" y="266" width="32" height="94"/>`;
-B += books(552, 300, 28) + books(552, 330, 28) + books(636, 300, 24) + books(636, 330, 24) + `<path class="l" d="M609 266 V360 M590 300 H628"/>`;
-
-// ---- E: study room (brown roof)
-B += `<rect class="wall o" x="682" y="214" width="98" height="146"/>`;
-B += gable(674, 790, 176, 214, 22, 'rA');
-B += win(696, 228, 32, 30) + win(740, 228, 32, 30);
-B += sign(692, 274, 82, 14, 'STUDY · 자습실', 7.5);
-B += `<rect class="wl o" x="692" y="296" width="46" height="62"/>` + books(698, 322, 34) + books(698, 348, 34) + `<path class="l" d="M744 300 q0 -4 4 -4 h20 q4 0 4 4"/>`;
-B += `<rect class="plate o" x="746" y="300" width="28" height="60"/><path class="l" d="M760 300 V360"/>`;
-// small roof birds
-B += [[60,172],[250,108],[444,158],[610,120],[720,174]].map(([x,y]) => `<path class="l" d="M${x} ${y} q2 -4 4 0 q2 -4 4 0"/>`).join('');
-$('bld').innerHTML = B;
-$('glows').innerHTML = GL;
-
-// street lamps
-$('lamps').innerHTML = [378, 534, 674].map(x => `<path class="l" d="M${x} 360 V274 q0 -10 -8 -10"/><rect class="wl o" x="${x-14}" y="262" width="12" height="16" rx="2"/><circle class="lg" cx="${x-8}" cy="270" r="16" fill="#f3bd6e" opacity="0"/>`).join('');
-// tree at right edge
-$('tree').innerHTML = `<path class="l" d="M780 360 V300"/><circle class="plate o" cx="812" cy="268" r="30"/><path class="l" d="M786 268 q4 -6 10 -2"/>`;
-// stars
-$('stars').innerHTML = Array.from({length:44}, () => `<circle cx="${rnd(24,780)}" cy="${rnd(24,150)}" r="${rnd(.6,1.4)}" fill="#fff"/>`).join('');
-
-/* ================= PALETTE / TIME ================= */
-const K = [
- { h:0,    bg:'#181d38', wall:'#232843', plate:'#2c3252', ink:'#dfe3f2', roofA:'#33292f', roofB:'#243040', roofC:'#2f3445', street:'#1f2440', winOff:'#1c2038', winLit:'#f3bd6e', bus:'#8a6c24', bri:.62, n:1 },
- { h:5,    bg:'#1c2140', wall:'#262b46', plate:'#2f3555', ink:'#dfe3f2', roofA:'#352b32', roofB:'#26334a', roofC:'#313748', street:'#22274a', winOff:'#1f233c', winLit:'#f3bd6e', bus:'#8f7227', bri:.65, n:1 },
- { h:6.6,  bg:'#e9cdb4', wall:'#efdcc6', plate:'#f5e8d6', ink:'#2b2724', roofA:'#6d4034', roofB:'#3b5557', roofC:'#5a5f66', street:'#e6d1b8', winOff:'#e8d6bf', winLit:'#f5d79c', bus:'#d8a82e', bri:.94, n:.25 },
- { h:8.6,  bg:'#f3eee3', wall:'#f7f2e7', plate:'#fbf8ef', ink:'#2b2724', roofA:'#7a4a3a', roofB:'#3f5f60', roofC:'#5c6670', street:'#efe6d6', winOff:'#efe9dc', winLit:'#f3ecd9', bus:'#e0b030', bri:1, n:0 },
- { h:16,   bg:'#f3eee3', wall:'#f7f2e7', plate:'#fbf8ef', ink:'#2b2724', roofA:'#7a4a3a', roofB:'#3f5f60', roofC:'#5c6670', street:'#efe6d6', winOff:'#efe9dc', winLit:'#f3ecd9', bus:'#e0b030', bri:1, n:0 },
- { h:17.8, bg:'#e8c5a2', wall:'#f2dec4', plate:'#f7e9d3', ink:'#2b2724', roofA:'#6d4034', roofB:'#3b5557', roofC:'#5a5f66', street:'#ecd1b2', winOff:'#ecd5b9', winLit:'#f7d9a0', bus:'#d9a82e', bri:.96, n:.15 },
- { h:19.2, bg:'#3d3b63', wall:'#554d6c', plate:'#645b7a', ink:'#e4def0', roofA:'#4a3340', roofB:'#34475a', roofC:'#454a5e', street:'#34355a', winOff:'#3a3858', winLit:'#f6c77d', bus:'#b58c28', bri:.8, n:.75 },
- { h:20.8, bg:'#181d38', wall:'#232843', plate:'#2c3252', ink:'#dfe3f2', roofA:'#33292f', roofB:'#243040', roofC:'#2f3445', street:'#1f2440', winOff:'#1c2038', winLit:'#f3bd6e', bus:'#8a6c24', bri:.62, n:1 },
- { h:24,   bg:'#181d38', wall:'#232843', plate:'#2c3252', ink:'#dfe3f2', roofA:'#33292f', roofB:'#243040', roofC:'#2f3445', street:'#1f2440', winOff:'#1c2038', winLit:'#f3bd6e', bus:'#8a6c24', bri:.62, n:1 },
-];
-const hexRGB = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+const NS = 'http://www.w3.org/2000/svg';
+const clamp = (x,a=0,b=1) => Math.min(b, Math.max(a, x));
+const seg = (u,a,b) => clamp((u-a)/(b-a));
+const ease = t => t*t*(3-2*t);
 const lerp = (a,b,k) => a + (b-a)*k;
-const mixHex = (a,b,k) => 'rgb(' + hexRGB(a).map((v,i) => Math.round(lerp(v, hexRGB(b)[i], k))).join(',') + ')';
-const NAMES = ['bg','wall','plate','ink','roofA','roofB','roofC','street','winOff','winLit','bus'];
-let hour = 9.2, playing = true, night = 0;
-function applyTime(h) {
-  let i = 0; while (i < K.length-2 && h > K[i+1].h) i++;
-  const a = K[i], b = K[i+1], k0 = Math.min(1, Math.max(0, (h-a.h)/(b.h-a.h))), k = k0*k0*(3-2*k0);
-  const r = document.documentElement.style;
-  NAMES.forEach(n => r.setProperty('--'+n, mixHex(a[n], b[n], k)));
-  r.setProperty('--bri', lerp(a.bri, b.bri, k));
-  night = lerp(a.n, b.n, k);
-  $('stars').setAttribute('opacity', Math.max(0, night - .25));
-  $('glows').setAttribute('opacity', night * .55);
-  document.querySelectorAll('.lg').forEach(e => e.setAttribute('opacity', night*.35));
-  // sun / moon
-  let sm = '';
-  if (h >= 6 && h < 18) { const p = (h-6)/12; sm = `<g transform="translate(${40+720*p} ${64 - Math.sin(Math.PI*p)*38})"><circle r="11" fill="#f0c75e" stroke="var(--ink)" stroke-width="1"/></g>`; }
-  else { const p = h >= 18 ? (h-18)/12 : (h+6)/12; sm = `<g transform="translate(${40+720*p} ${64 - Math.sin(Math.PI*p)*38})"><circle r="10" fill="#f1ecd9"/><circle cx="4" cy="-2" r="9" fill="var(--bg)"/></g>`; }
-  $('sunmoon').innerHTML = sm;
-  const hh = Math.floor(h) % 24, mm = Math.floor((h%1)*60);
-  const period = h < 5 ? '새벽' : h < 11 ? '아침' : h < 16 ? '낮' : h < 18.5 ? '오후' : h < 21 ? '저녁' : '밤';
-  $('label').textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')} · ${period}`;
-  $('rng').value = h; $('hh').textContent = '';
+const lp = (p,q,k) => [lerp(p[0],q[0],k), lerp(p[1],q[1],k)];
+const TOTAL = 22;
+
+/* ---------- color helpers ---------- */
+const rgbOf = s => s[0]==='#' ? [1,3,5].map(i => parseInt(s.slice(i,i+2),16)) : s.match(/[\d.]+/g).slice(0,3).map(Number);
+const mixCol = (a,b,k) => 'rgb(' + rgbOf(a).map((v,i) => Math.round(lerp(v, rgbOf(b)[i], k))).join(',') + ')';
+const mixv = (a,b,k) => typeof a === 'string' ? mixCol(a,b,k) : Array.isArray(a) ? a.map((v,i) => lerp(v,b[i],k)) : lerp(a,b,k);
+
+/* ---------- palettes: same picture, different light ---------- */
+const P = {
+ A:{ sky1:'#cfe3ec', sky2:'#f2f0e6', cel:'#f8e8b4', cloud:'#ffffff', wall:'#f7f2e7', roof:'#6f8a8d', sign:'#fdfaf1', signInk:'#3d4a4c',
+     side:'#e5e1d7', sideRoof:'#bdb9ae', sideWin:'#d8dde0', pave:'#ece6d8', road:'#d9d6cc', room:'#eef0e6', floor:'#e2dccb', ink:'#4b4741', shadow:'#2f3340',
+     cap:'rgba(255,255,255,.78)', capInk:'#3b3732',
+     n:0, lit:[0,0,0], lamp:0, shLb:12, shWd:12, shOp:.1, shLamp:24, eave:5, celY:64, sideLit:0 },
+ S:{ sky1:'#f1d5c4', sky2:'#f9e9d6', cel:'#f2b88b', cloud:'#fff4e6', wall:'#f6e8d6', roof:'#7a7078', sign:'#fcf0de', signInk:'#4a4038',
+     side:'#e3d6ca', sideRoof:'#b8aaa0', sideWin:'#dacfc9', pave:'#ecd9c3', road:'#d8c7b5', room:'#f5e3cc', floor:'#e5d0b4', ink:'#4b4039', shadow:'#5a4358',
+     cap:'rgba(255,248,238,.8)', capInk:'#4a3e36',
+     n:0, lit:[.05,.3,.05], lamp:.15, shLb:70, shWd:34, shOp:.17, shLamp:92, eave:13, celY:84, sideLit:0 },
+ E:{ sky1:'#1b2547', sky2:'#3a4670', cel:'#f1ecd9', cloud:'#8c97c4', wall:'#3c4369', roof:'#2a3250', sign:'#4b537e', signInk:'#f2e9cf',
+     side:'#2f3556', side2:'', sideRoof:'#272d49', sideWin:'#394066', pave:'#2c3459', road:'#232a4a', room:'#4f4b6c', floor:'#403e5d', ink:'#aab4d6', shadow:'#0e1330',
+     cap:'rgba(20,27,56,.72)', capInk:'#f3ecd8',
+     n:1, lit:[.38,.42,1], lamp:1, shLb:0, shWd:6, shOp:.05, shLamp:0, eave:6, celY:62, sideLit:.25 },
+};
+delete P.E.side2;
+function palAt(T) {
+  let a, b, k = 0;
+  if (T <= 5.5) { a = b = P.A; }
+  else if (T < 6.5) { a = P.A; b = P.S; k = ease(T-5.5); }
+  else if (T <= 12.5) { a = b = P.S; }
+  else if (T < 13.5) { a = P.S; b = P.E; k = ease(T-12.5); }
+  else { a = b = P.E; }
+  const o = {}; for (const key in a) o[key] = mixv(a[key], b[key], k); return o;
 }
 
-/* ================= PEOPLE ================= */
-const people = [];
-const SK = '#f2e2cc';
-function mkPerson(o) {
-  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'hit');
-  const long = o.long, c = o.coat;
-  g.innerHTML = `<g class="f">
-    <rect x="-14" y="-76" width="28" height="78" fill="transparent"/>
-    <path class="o la" fill="none"/><path class="o lb" fill="none"/>
-    ${o.pack ? `<rect class="o" x="-13" y="-52" width="8" height="18" rx="2" style="fill:#7d6a55"/>` : ''}
-    <path class="o" style="fill:${c}" d="${long ? 'M-10 -14 L-7 -52 Q0 -56 7 -52 L10 -14 Z' : 'M-8 -28 L-7 -52 Q0 -56 7 -52 L8 -28 Z'}"/>
-    <path class="o ab" fill="none"/>
-    <circle class="o" cx="0" cy="-62" r="7" style="fill:${SK}"/>
-    <path style="fill:${o.hair||'#2a2622'}" d="M-7.5 -62 Q-8 -71 0 -70.5 Q8 -71 7.5 -62 Q3 -66 -7.5 -62 Z"/>
-    ${o.bun ? '<circle cx="-6" cy="-70" r="3.4" style="fill:#2a2622"/>' : ''}
-    ${o.glasses ? '<circle class="o" cx="3.5" cy="-61" r="2.8" fill="none"/>' : ''}
-    <path class="o af" fill="none"/>
-    ${o.bag ? `<rect class="o" x="6" y="-36" width="10" height="9" rx="1.5" style="fill:#8a5a3a"/>` : ''}
-    ${o.books ? `<g transform="translate(9 -38)"><rect class="o" x="0" y="-5" width="13" height="4" fill="#a5483c"/><rect class="o" x="1" y="-9" width="11" height="4" fill="#3f6a73"/></g>` : ''}
-  </g>`;
-  $('people').appendChild(g);
-  const p = Object.assign({ g, f: g.querySelector('.f'), la: g.querySelector('.la'), lb: g.querySelector('.lb'), ab: g.querySelector('.ab'), af: g.querySelector('.af'),
-    x: rnd(60, 740), dir: Math.random() < .5 ? 1 : -1, v: rnd(14, 24), ph: rnd(0, 6), pause: 0, hop: 0, y: 372 }, o);
-  g.addEventListener('click', () => { p.hop = 1; p.pause = 1.2; say(p.say, p.x, p.y - 74*p.sc - 6); });
-  people.push(p); return p;
+/* ---------- static art ---------- */
+let svgS = '';
+for (let i = 0; i < 26; i++) svgS += `<circle cx="${(i*131)%780+10}" cy="${(i*53)%120+14}" r="${.6+(i%3)*.35}" fill="#fff"/>`;
+$('stars').innerHTML = svgS; $('stars').setAttribute('opacity', 0);
+
+let rl = ''; for (let y = 110; y < 142; y += 5) { const k = (y-104)/38; rl += `<path d="M${268-36*k+4} ${y} H${532+36*k-4}"/>`; } $('roofLines').innerHTML = rl;
+
+let aw = ''; for (let i = 0; i < 8; i++) aw += `<path class="o" style="fill:${i%2?'var(--sideWin)':'var(--sideRoof)'}" d="M${584+i*20} 314 h20 l1 12 h-20 z"/>`; $('awnR').innerHTML = aw;
+
+let jn = ''; [394, 407, 420].forEach((y, r) => { jn += `<path d="M0 ${y} H800"/>`; for (let x = (r%2)*24; x < 800; x += 48) jn += `<path d="M${x} ${y} v13"/>`; }); $('joints').innerHTML = jn;
+
+// lamps
+$('lamps').innerHTML = [222, 578].map(x => `
+  <path class="o" style="stroke-width:1.6" d="M${x} 410 V280 q0 -12 -9 -12"/>
+  <rect class="o" x="${x-5}" y="404" width="10" height="6" style="fill:var(--sideRoof)"/>
+  <path class="o lampBody" style="fill:var(--lampFill,#f3ecd9)" d="M${x-17} 262 h16 l-2 14 h-12 z"/>
+  <circle class="halo" cx="${x-9}" cy="270" r="15" fill="#f6c777" opacity="0"/>`).join('');
+$('planters').innerHTML = [].map(x => `<path class="o" style="fill:var(--sideRoof)" d="M${x-8} 400 h16 l-2 12 h-12 z"/><path class="o" d="M${x} 400 q-6 -10 -9 -14 M${x} 400 q0 -12 0 -18 M${x} 400 q6 -10 9 -14"/>`).join('');
+$('shLamps').innerHTML = [222, 578].map(x => `<path class="sl" data-x="${x}" stroke-width="3"/>`).join('');
+
+/* ---------- ground floor ---------- */
+$('ground').innerHTML = `
+  <rect class="o" x="262" y="342" width="84" height="30" style="fill:var(--room)"/><path class="o" d="M304 342 v30 M262 357 h84"/>
+  <rect class="o" x="454" y="342" width="84" height="30" style="fill:var(--room)"/><path class="o" d="M496 342 v30 M454 357 h84"/>
+  <rect class="o" x="376" y="338" width="48" height="42" style="fill:var(--room)"/><rect class="o" x="381" y="343" width="38" height="37" fill="none"/><path class="o" d="M400 343 v37"/>
+  <path class="o" style="fill:var(--sideRoof)" d="M368 338 h64 l-4 -10 h-56 z"/>`;
+
+/* ---------- classroom windows ---------- */
+const WX = [256, 356, 456], WY = 218;
+const SK = '#efdbc3', HAIR = '#3a302c', IK = '#3d3733', TEAL = '#4f7a7e', ROSE = '#c98a7c', MUST = '#d1ab55', WOOD = '#d8c3a3', ACC = '#b8704a';
+const interiors = [
+`<rect id="Lroom" width="82" height="90"/><rect id="Lfloor" y="72" width="82" height="18"/>
+ <rect x="10" y="10" width="34" height="30" fill="#f8f4ea" stroke="${IK}" stroke-width=".8"/>
+ <g stroke="${IK}" stroke-width=".8" fill="none"><circle cx="27" cy="27" r="7"/><path d="M21 22 l1 -6 l5 4 M33 22 l-1 -6 l-5 4 M20 27 h-6 M20 29.5 l-6 2 M34 27 h6 M34 29.5 l6 2"/><path d="M24.5 27 v.1 M29.5 27 v.1" stroke-width="1.6"/></g>
+ <rect x="22" y="66" width="60" height="4" fill="${WOOD}" stroke="${IK}" stroke-width=".7"/><path d="M28 70 V88 M76 70 V88" stroke="${IK}" stroke-width=".8"/>
+ <g id="Lt"><path d="M6 62 Q13 55 20 62 L21 84 H5 Z" fill="${TEAL}" stroke="${IK}" stroke-width=".8"/><rect x="7" y="84" width="12" height="6" fill="#3a3a48"/>
+   <circle id="Lth" cx="13" cy="50" r="6.2" fill="${SK}" stroke="${IK}" stroke-width=".8"/><path id="Lthh" d="M6.8 49 Q7 42.5 13 42.8 Q19.5 42.5 19.2 49 Q15 46 6.8 49 Z" fill="${HAIR}"/></g>
+ <path id="LtArm" fill="none" stroke="${TEAL}" stroke-width="3.2" stroke-linecap="round"/><circle id="LtHand" r="2.1" fill="${SK}"/>
+ <g id="Lc0"><rect x="-6" y="-8" width="12" height="16" fill="#fffdf6" stroke="${IK}" stroke-width=".8"/><text y="4.5" text-anchor="middle" font-size="12" font-weight="800" fill="#b8704a" font-family="Georgia,serif">c</text></g>
+ <g id="Lc1"><rect x="-6" y="-8" width="12" height="16" fill="#fffdf6" stroke="${IK}" stroke-width=".8"/><text y="4.5" text-anchor="middle" font-size="12" font-weight="800" fill="#3f6a73" font-family="Georgia,serif">a</text></g>
+ <g id="Lc2"><rect x="-6" y="-8" width="12" height="16" fill="#fffdf6" stroke="${IK}" stroke-width=".8"/><text y="4.5" text-anchor="middle" font-size="12" font-weight="800" fill="#b08a34" font-family="Georgia,serif">t</text></g>
+ <rect id="Lbr" x="21" y="47" width="44" height="23" rx="5" fill="none" stroke="${ACC}" stroke-width="1.1" stroke-dasharray="3 2"/>
+ <g id="Lk"><rect x="62" y="58" width="16" height="14" rx="4" fill="${MUST}" stroke="${IK}" stroke-width=".8"/><circle id="Lkh" cx="70" cy="50" r="6" fill="${SK}" stroke="${IK}" stroke-width=".8"/><path id="Lkhh" d="M64 49 Q64.2 43 70 43.2 Q76 43 76 49 Q72 46.5 64 49 Z" fill="${HAIR}"/></g>
+ <path id="LkArm" fill="none" stroke="${MUST}" stroke-width="3" stroke-linecap="round"/><circle id="LkHand" r="1.9" fill="${SK}"/>`,
+
+`<rect id="Mroom" width="82" height="90"/><rect id="Mfloor" y="72" width="82" height="18"/>
+ <circle cx="66" cy="16" r="8" fill="#fbf8ef" stroke="${IK}" stroke-width=".8"/><path d="M66 16 L66 10 M66 16 L69.5 20" stroke="${IK}" stroke-width=".9" stroke-linecap="round"/>
+ <rect x="6" y="66" width="76" height="4" fill="${WOOD}" stroke="${IK}" stroke-width=".7"/><path d="M12 70 V88 M76 70 V88" stroke="${IK}" stroke-width=".8"/>
+ <g id="Mk"><rect x="14" y="54" width="20" height="16" rx="5" fill="${ROSE}" stroke="${IK}" stroke-width=".8"/>
+   <g id="Mkh"><circle cx="24" cy="46" r="6.6" fill="${SK}" stroke="${IK}" stroke-width=".8"/><path d="M17.4 45 Q17.6 38.5 24 38.7 Q30.4 38.5 30.6 45 Q26 42.4 17.4 45 Z" fill="${HAIR}"/></g></g>
+ <rect x="38" y="26" width="38" height="38" fill="#f6f2e6" stroke="${IK}" stroke-width=".8"/><rect x="42" y="30" width="30" height="6" fill="${IK}"/>
+ <g stroke="${IK}" stroke-width=".7" opacity=".7"><path d="M42 41 H72 M42 45.5 H72 M42 50 H72 M42 54.5 H72 M42 59 H66"/></g>
+ <rect id="Mul" x="42" y="47" width="0" height="1.4" fill="${ACC}"/>
+ <path id="MkArm" fill="none" stroke="${ROSE}" stroke-width="3" stroke-linecap="round"/><circle id="MkHand" r="1.9" fill="${SK}"/>
+ <g id="Mb" opacity="0"><path d="M3 3 H37 Q40 3 40 6 V20 Q40 23 37 23 H20 L13 30 L14 23 H3 Q0 23 0 20 V6 Q0 3 3 3 Z" fill="#fffdf6" stroke="${IK}" stroke-width=".8"/>
+   <path d="M13 9 q4 4.5 0 9 M20 7 q6 6.5 0 13 M27 9 q4 4.5 0 9" fill="none" stroke="${ACC}" stroke-width="1.3" stroke-linecap="round"/></g>`,
+
+`<rect id="Rroom" width="82" height="90"/><rect id="Rfloor" y="72" width="82" height="18"/>
+ <rect x="6" y="66" width="76" height="4" fill="${WOOD}" stroke="${IK}" stroke-width=".7"/><path d="M12 70 V88 M76 70 V88" stroke="${IK}" stroke-width=".8"/>
+ <g id="Rs"><rect x="8" y="54" width="20" height="16" rx="5" fill="${ROSE}" stroke="${IK}" stroke-width=".8"/>
+   <circle id="Rsh" cx="18" cy="46" r="6.4" fill="${SK}" stroke="${IK}" stroke-width=".8"/><path d="M11.6 45 Q11.8 38.6 18 38.8 Q24.2 38.6 24.4 45 Q20 42.4 11.6 45 Z" fill="${HAIR}"/></g>
+ <rect x="34" y="14" width="30" height="38" fill="#f6f2e6" stroke="${IK}" stroke-width=".8"/>
+ <g stroke="${IK}" stroke-width=".7" opacity=".7"><path d="M38 21 H60 M38 26.4 H60 M38 31.8 H60 M38 37.2 H60 M38 42.6 H60 M38 48 H54"/></g>
+ <rect id="Rhl" x="38" y="35.2" width="0" height="4" fill="#efd57a" opacity=".85"/>
+ <g stroke="${IK}" stroke-width=".7" fill="#fffdf6"><rect x="36" y="56" width="30" height="8"/></g>
+ <g stroke="${IK}" stroke-width=".7" fill="#fffdf6"><circle cx="41" cy="60" r="2.1"/><circle cx="48" cy="60" r="2.1"/><circle cx="55" cy="60" r="2.1"/><circle cx="62" cy="60" r="2.1"/></g>
+ <circle id="Rans" cx="55" cy="60" r="1.5" fill="${IK}" opacity="0"/>
+ <path id="Rck" d="M25 30 l2.4 2.6 l5 -6" fill="none" stroke="${ACC}" stroke-width="1.5" stroke-linecap="round" opacity="0"/>
+ <path id="RsArm" fill="none" stroke="${ROSE}" stroke-width="3" stroke-linecap="round"/><circle id="RsHand" r="1.9" fill="${SK}"/>
+ <g id="Rt"><path d="M64 62 Q72 55 80 62 L81 86 H63 Z" fill="${TEAL}" stroke="${IK}" stroke-width=".8"/><rect x="65" y="86" width="14" height="4" fill="#3a3a48"/>
+   <circle id="Rth" cx="72" cy="50" r="6.2" fill="${SK}" stroke="${IK}" stroke-width=".8"/><path d="M65.8 49 Q66 42.6 72 42.8 Q78.2 42.6 78.2 49 Q74 46.4 65.8 49 Z" fill="${HAIR}"/></g>
+ <path id="RtArm" fill="none" stroke="${TEAL}" stroke-width="3.2" stroke-linecap="round"/><circle id="RtHand" r="2" fill="${SK}"/>`
+];
+const winEls = [];
+const DESC = ['글자 소리를 하나씩 익히고 이어 읽어요.', '영자신문을 읽고 한 문장을 내 목소리로 말해요.', '지문에서 답의 근거를 찾아 설명해요.'];
+const SUB  = ['소리를 하나씩 모아, 단어로.', '오늘의 뉴스, 내 목소리로.', '답을 고르고, 근거까지.'];
+const LAB  = ['오후 2:15 · 파닉스', '오후 5:10 · 영자신문', '오후 7:30 · 중·고등 독해'];
+const NAMES = ['왼쪽 교실 창, 파닉스', '가운데 교실 창, 영자신문', '오른쪽 교실 창, 중·고등 독해'];
+WX.forEach((x, i) => {
+  const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'win'); g.setAttribute('tabindex', 0); g.setAttribute('role', 'button'); g.setAttribute('aria-label', NAMES[i] + ' — 누르면 이 수업으로 이동');
+  g.innerHTML = `
+    <rect x="${x-2}" y="${WY-2}" width="92" height="100" style="fill:var(--wall)" class="o"/>
+    <g clip-path="url(#c${i})"><g class="int" transform="translate(${x+3} ${WY+3})">${interiors[i]}</g>
+      <path d="M${x+3} ${WY+60} L${x+40} ${WY+3} H${x+52} L${x+3} ${WY+80} Z" fill="#fff" opacity=".1"/></g>
+    <rect class="fr" x="${x+3}" y="${WY+3}" width="82" height="90" fill="none" style="stroke:var(--ink)" stroke-width="1.3"/>
+    <rect x="${x-6}" y="${WY+96}" width="100" height="6" style="fill:var(--wall)" class="o"/>
+    <rect class="hit" x="${x-6}" y="${WY-12}" width="100" height="130"/>`;
+  $('wins').appendChild(g); winEls.push(g);
+  g.addEventListener('click', () => selectWin(i));
+  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectWin(i); } });
+});
+const G = id => $(id);
+const IDS = {};
+['Lroom','Lfloor','Lt','Lth','Lthh','LtArm','LtHand','Lc0','Lc1','Lc2','Lbr','Lk','Lkh','Lkhh','LkArm','LkHand',
+ 'Mroom','Mfloor','Mk','Mkh','Mul','MkArm','MkHand','Mb','Rroom','Rfloor','Rs','Rsh','Rhl','Rans','Rck','RsArm','RsHand','Rt','Rth','RtArm','RtHand'].forEach(k => IDS[k] = G(k));
+
+/* ---------- lesson animation (small, slow) ---------- */
+const arm = (el, s, t, bend = 5) => el.setAttribute('d', `M${s[0]} ${s[1]} Q${(s[0]+t[0])/2} ${(s[1]+t[1])/2 + bend} ${t[0]} ${t[1]}`);
+const tr = (el, x, y) => el.setAttribute('transform', `translate(${x} ${y})`);
+
+function lessonL(u, T) {
+  const SX = [30, 44, 58], REST = [22, 66], PT = [[...REST]];
+  const place = [.7, 1.4, 2.1], point = [2.7, 3.4, 4.1];
+  // teacher hand
+  let hand = REST, holding = -1;
+  for (let k = 0; k < 3; k++) {
+    const tgt = [SX[k]-7, 60];
+    if (u >= place[k]-.55 && u < place[k]) { hand = lp(k ? [SX[k-1]-7, 60] : REST, tgt, 0); hand = lp(REST, tgt, ease(seg(u, place[k]-.55, place[k]))); holding = k; }
+    else if (u >= place[k] && u < place[k]+.45) { hand = lp(tgt, REST, ease(seg(u, place[k], place[k]+.45))); }
+  }
+  arm(IDS.LtArm, [19, 60], hand); tr(IDS.LtHand, hand[0], hand[1]);
+  // cards
+  for (let k = 0; k < 3; k++) {
+    const el = IDS['Lc'+k]; let pos = [SX[k], 58], op = 1;
+    if (u < place[k]-.55) op = 0;
+    else if (u < place[k]) pos = [hand[0]+7, hand[1]-2];
+    const pk = u >= point[k] && u < point[k]+.7;
+    el.setAttribute('opacity', op); tr(el, pos[0], pos[1]);
+    el.firstElementChild.setAttribute('stroke', pk ? ACC : IK); el.firstElementChild.setAttribute('stroke-width', pk ? 1.6 : .8);
+  }
+  // child finger
+  let P0 = [66, 64];
+  for (let k = 0; k < 3; k++) if (u >= point[k] && u < point[k]+.7) { const prev = k ? [SX[k-1]+1, 47] : [66, 64]; P0 = lp(prev, [SX[k]+1, 47], ease(seg(u, point[k], point[k]+.22))); }
+  if (u >= point[2]+.7) P0 = lp([SX[2]+1, 47], [66, 64], ease(seg(u, point[2]+.7, point[2]+1.1)));
+  arm(IDS.LkArm, [67, 62], P0, 3); tr(IDS.LkHand, P0[0], P0[1]);
+  IDS.Lbr.setAttribute('opacity', seg(u, 4.55, 5.0));
+  const b = Math.sin(T*2.1)*.5; tr(IDS.Lth, 0, b); tr(IDS.Lthh, 0, b); tr(IDS.Lkh, 0, -b); tr(IDS.Lkhh, 0, -b);
 }
-mkPerson({ sc:.62, coat:'#2f4a7a', long:true, glasses:true, bun:true, books:true, say:'Good morning, class!', x:200, v:17 });
-mkPerson({ sc:.44, coat:'#c79a3b', pack:true, hair:'#4a3020', say:'Hi, teacher!', x:170, v:17 });
-mkPerson({ sc:.40, coat:'#8a3b3b', pack:true, bun:true, say:'Look, a whale!', x:140, v:17 });
-mkPerson({ sc:.58, coat:'#2f6a68', bag:true, say:'See you tomorrow!', x:470, v:20 });
-mkPerson({ sc:.58, coat:'#7a4a3a', bag:true, glasses:true, say:'Nice weather!', x:600, v:15 });
-mkPerson({ sc:.56, coat:'#8a8a93', long:true, hair:'#d8d8d8', say:'English is fun!', x:350, v:13 });
-mkPerson({ sc:.56, coat:'#3a3f6a', say:'Library, please!', x:640, v:22 });
-mkPerson({ sc:.42, coat:'#4a7a5a', pack:true, say:"I'm a student!", x:520, v:18 });
-
-function renderPerson(p, moving) {
-  const s = moving ? Math.sin(p.ph) : 0, c = moving ? Math.cos(p.ph) : 0;
-  const foot = (sg) => `M${sg>0?1:-1} -28 L${sg*s*12} ${-1 - Math.max(0, -sg*c)*3}`;
-  p.la.setAttribute('d', foot(1)); p.lb.setAttribute('d', foot(-1));
-  p.ab.setAttribute('d', `M-1 -50 L${-s*6 - 2} -34`);
-  p.af.setAttribute('d', p.books || p.bag ? 'M2 -50 L9 -38' : `M2 -50 L${s*6 + 3} -34`);
-  const hop = p.hop > 0 ? Math.sin(p.hop*Math.PI)*8 : 0;
-  p.g.setAttribute('transform', `translate(${p.x} ${p.y - hop}) scale(${p.sc})`);
-  p.f.setAttribute('transform', `scale(${p.dir} 1)`);
+function lessonM(u, T) {
+  const REST = [30, 68];
+  const k1 = ease(seg(u, 1.0, 3.4)), k2 = ease(seg(u, 3.5, 4.0));
+  let F = lp([42, 70], [72, 49], k1); F[1] = lerp(70, 49, seg(u, .5, 1.0)); // rise to the line first
+  if (u < 1.0) F = lp(REST, [42, 49], ease(seg(u, .5, 1.0)));
+  if (u >= 3.4) F = lp([72, 49], REST, k2);
+  arm(IDS.MkArm, [30, 61], F, 3); tr(IDS.MkHand, F[0], F[1]);
+  IDS.Mul.setAttribute('width', 30*k1);
+  const lift = ease(seg(u, 3.7, 4.2)), b = Math.sin(T*2)*.5;
+  tr(IDS.Mkh, lerp(3, -1, lift), lerp(2, -2, lift) + b);
+  IDS.Mb.setAttribute('opacity', seg(u, 4.3, 4.8)); tr(IDS.Mb, 4, 0);
+}
+function lessonR(u, T) {
+  const REST = [30, 66], AN = [55, 60], HS = [38, 37.2], HE = [60, 37.2];
+  let P0 = REST;
+  if (u < .8) P0 = lp(REST, AN, ease(seg(u, .5, .8)));
+  else if (u < 1.5) P0 = lp(AN, HS, ease(seg(u, 1.3, 1.5)));
+  if (u >= 1.5 && u < 3.2) P0 = lp(HS, HE, ease(seg(u, 1.5, 3.2)));
+  else if (u >= 3.2) P0 = lp(HE, REST, ease(seg(u, 3.3, 3.8)));
+  if (u >= .8 && u < 1.3) P0 = AN;
+  arm(IDS.RsArm, [24, 62], P0, 3); tr(IDS.RsHand, P0[0], P0[1]);
+  IDS.Rans.setAttribute('opacity', seg(u, 1.0, 1.3));
+  IDS.Rhl.setAttribute('width', 22*ease(seg(u, 1.5, 3.2)));
+  const tp = ease(seg(u, 3.6, 4.3)), TH = lp([70, 72], [64.5, 38.6], tp);
+  arm(IDS.RtArm, [67, 62], TH, 3); tr(IDS.RtHand, TH[0], TH[1]);
+  IDS.Rck.setAttribute('opacity', seg(u, 4.6, 5.0));
+  const b = Math.sin(T*2.3)*.5; tr(IDS.Rsh, 0, b); tr(IDS.Rth, 0, -b);
 }
 
-/* ---- bike, dog, bus ---- */
-const V = $('vehicles'); const NSV = 'http://www.w3.org/2000/svg';
-const bike = document.createElementNS(NSV, 'g'); bike.setAttribute('class', 'hit');
-bike.innerHTML = `<g class="f"><rect x="-22" y="-52" width="46" height="54" fill="transparent"/>
-  <g class="w1"><circle class="o" cx="-14" cy="-9" r="9" fill="none"/><path class="l sp" d="M-14 -18 V0 M-23 -9 H-5"/></g>
-  <g class="w2"><circle class="o" cx="14" cy="-9" r="9" fill="none"/><path class="l sp" d="M14 -18 V0 M5 -9 H23"/></g>
-  <path class="o" fill="none" d="M-14 -9 L-4 -19 H9 L14 -9 M-4 -19 L0 -9 H-14 M9 -19 L7 -24"/>
-  <path class="o" d="M-6 -22 L-3 -36 Q2 -40 6 -36 L4 -24 Z" style="fill:#3a5a8a"/><circle class="o" cx="3" cy="-44" r="6" style="fill:${SK}"/>
-  <path d="M-3 -44 Q-3 -51 3 -50 Q9 -50 8 -44 Q4 -47 -3 -44 Z" style="fill:#2a2622"/><path class="o" fill="none" d="M4 -34 L12 -26"/></g>`;
-V.appendChild(bike);
-const bk = { g: bike, x: 120, dir: 1, v: 38, sc: .55, y: 394, ph: 0, w1: bike.querySelector('.w1'), w2: bike.querySelector('.w2'), f: bike.querySelector('.f') };
-bike.addEventListener('click', () => say('Ring ring!', bk.x, bk.y - 52));
-
-const dog = document.createElementNS(NSV, 'g'); dog.setAttribute('class', 'hit');
-dog.innerHTML = `<g class="f"><rect x="-16" y="-24" width="34" height="26" fill="transparent"/>
-  <path class="o la" fill="none"/><path class="o lb" fill="none"/>
-  <ellipse class="o" cx="0" cy="-13" rx="12" ry="6" style="fill:#c79a6b"/><circle class="o" cx="13" cy="-18" r="5" style="fill:#c79a6b"/>
-  <path class="o" style="fill:#7a4a3a" d="M16 -22 l3 -4 l1 5 z"/><circle cx="15" cy="-19" r="1" class="ink"/>
-  <path class="o tl" fill="none"/>
-  <path class="o lc" fill="none"/><path class="o ld" fill="none"/></g>`;
-V.appendChild(dog);
-const dg = { g: dog, x: 440, dir: -1, v: 16, sc: .8, y: 373, ph: 0, f: dog.querySelector('.f'), la: dog.querySelector('.la'), lb: dog.querySelector('.lb'), lc: dog.querySelector('.lc'), ld: dog.querySelector('.ld'), tl: dog.querySelector('.tl') };
-dog.addEventListener('click', () => say('멍!  Woof!', dg.x, dg.y - 34));
-
-const bus = document.createElementNS(NSV, 'g'); bus.setAttribute('class', 'hit');
-bus.innerHTML = `<polygon class="hl" points="36,-12 110,-2 110,-22" fill="#f6e9a8" opacity="0"/>
-  <rect class="o" x="-36" y="-28" width="72" height="24" rx="4" style="fill:var(--bus)"/>
-  ${[-30,-19,-8,3].map(x => `<rect class="o" x="${x}" y="-25" width="8" height="8" style="fill:var(--winLit)"/>`).join('')}
-  <rect class="o" x="15" y="-25" width="15" height="14" style="fill:var(--winLit)"/><path class="l" d="M-36 -13 H36"/>
-  <circle class="o" cx="-20" cy="-4" r="5.5" fill="#2a2622"/><circle class="o" cx="20" cy="-4" r="5.5" fill="#2a2622"/>
-  <use href="#wh" x="-30" y="-17" width="20" height="9"/>`;
-V.appendChild(bus);
-const bs = { g: bus, x: -90, v: 52, y: 424, sc: .9, honk: 0 };
-bus.addEventListener('click', () => say('Beep beep! 🚌', bs.x, bs.y - 36));
-
-/* ================= BUBBLE ================= */
-let bt;
-function say(text, x, y) {
-  $('bt').textContent = text;
-  const w = Math.max(60, text.length*6.2 + 22);
-  $('bb').setAttribute('x', -w/2); $('bb').setAttribute('width', w);
-  $('bubble').setAttribute('transform', `translate(${Math.min(760, Math.max(60, x))} ${Math.max(40, y)})`);
-  $('bubble').style.opacity = 1; clearTimeout(bt); bt = setTimeout(() => $('bubble').style.opacity = 0, 1700);
-}
-$('vane').addEventListener('click', () => say('뿌우~ Welcome!', 282, 40));
-
-/* ================= LOOP ================= */
-let last = performance.now();
-function step(o, dt, lo, hi) { o.x += o.dir*o.v*dt; if (o.x > hi || o.x < lo) { o.dir *= -1; o.x = Math.min(hi, Math.max(lo, o.x)); } }
-function frame(now) {
-  const dt = Math.min(50, now - last)/1000; last = now;
-  if (playing) { hour = (hour + dt*0.25) % 24; applyTime(hour); }   // 1 hour = 4s
-  people.forEach(p => {
-    p.hop = Math.max(0, p.hop - dt*2.4);
-    const moving = p.pause <= 0;
-    if (moving) { step(p, dt, 36, 760); p.ph += dt*p.v*.42; if (Math.random() < dt*.04) p.pause = rnd(.8, 2.4); }
-    else p.pause -= dt;
-    renderPerson(p, moving);
+/* ---------- state / render ---------- */
+let T = 0, playing = true, holdSeg = null, ended = false;
+const STABLE = [[0, 5.4], [6.6, 12.4], [13.6, 20]], JUMP = [0, 6.6, 13.6];
+const stage = $('stage');
+function render() {
+  const Tp = holdSeg !== null ? clamp(T, STABLE[holdSeg][0], STABLE[holdSeg][1]) : T;
+  const p = palAt(Tp);
+  const st = stage.style;
+  ['sky1','sky2','cel','cloud','wall','roof','sign','signInk','side','sideRoof','sideWin','pave','road','room','floor','ink','shadow','cap','capInk'].forEach(k => st.setProperty('--'+k, p[k]));
+  st.setProperty('--lampFill', mixCol('#f3ecd9', '#ffd98a', p.lamp));
+  // celestial & stars
+  $('cel').setAttribute('cy', p.celY); $('crs').setAttribute('cy', p.celY-3); $('crs').setAttribute('opacity', p.n);
+  $('cel').setAttribute('r', lerp(13, 12, p.n));
+  $('stars').setAttribute('opacity', Math.max(0, p.n - .35)*.8);
+  // shadows
+  $('shBld').setAttribute('points', `240,380 560,380 ${560-p.shLb},${380+p.shWd} ${240-p.shLb},${380+p.shWd}`); $('shBld').setAttribute('opacity', p.shOp);
+  document.querySelectorAll('.sl').forEach(el => { const x = +el.dataset.x; el.setAttribute('d', `M${x} 406 L${x-p.shLamp} ${406+p.shLamp*.16}`); });
+  $('shLamps').setAttribute('opacity', p.shOp*1.3);
+  $('eave').setAttribute('height', p.eave);
+  document.querySelectorAll('.halo').forEach(h => h.setAttribute('opacity', p.lamp*.16));
+  $('pool').setAttribute('opacity', p.lit[2]*p.n*.12);
+  $('swL').style.fill = mixCol(p.sideWin, '#d9b676', p.sideLit); $('swR').style.fill = mixCol(p.sideWin, '#d9b676', p.sideLit*.7);
+  // classroom interiors
+  ['L','M','R'].forEach((c, i) => {
+    const lit = p.lit[i];
+    IDS[c+'room'].setAttribute('fill', mixCol(p.room, '#f6c777', lit));
+    IDS[c+'floor'].setAttribute('fill', mixCol(p.floor, '#b98c55', lit*.6));
+    winEls[i].querySelector('.int').style.filter = `brightness(${1 - p.n*(1-lit)*.3})`;
   });
-  // bike
-  step(bk, dt, 40, 760); bk.ph += dt*bk.v*.3;
-  bk.g.setAttribute('transform', `translate(${bk.x} ${bk.y}) scale(${bk.sc})`); bk.f.setAttribute('transform', `scale(${bk.dir} 1)`);
-  [bk.w1, bk.w2].forEach((w, i) => w.setAttribute('transform', `rotate(${bk.ph*57*bk.dir} ${i ? 14 : -14} -9)`));
-  // dog
-  step(dg, dt, 40, 760); dg.ph += dt*dg.v*.5;
-  const s = Math.sin(dg.ph);
-  dg.la.setAttribute('d', `M-8 -10 L${-8+s*5} 0`); dg.lb.setAttribute('d', `M-4 -10 L${-4-s*5} 0`);
-  dg.lc.setAttribute('d', `M6 -10 L${6-s*5} 0`); dg.ld.setAttribute('d', `M9 -10 L${9+s*5} 0`);
-  dg.tl.setAttribute('d', `M-11 -15 q-5 -5 ${-6+Math.sin(dg.ph*3)*2} -9`);
-  dg.g.setAttribute('transform', `translate(${dg.x} ${dg.y}) scale(${dg.sc})`); dg.f.setAttribute('transform', `scale(${dg.dir} 1)`);
-  // bus
-  bs.x += bs.v*dt; if (bs.x > 900) bs.x = -90;
-  bs.g.setAttribute('transform', `translate(${bs.x} ${bs.y}) scale(${bs.sc})`);
-  bs.g.querySelector('.hl').setAttribute('opacity', night*.55);
-  requestAnimationFrame(frame);
+  lessonL(T, T); lessonM(T-6, T); lessonR(T-13, T);
+  // overlays
+  const idx = T < 6 ? 0 : T < 13 ? 1 : 2, fin = seg(T, 20.2, 20.9);
+  $('tagT').textContent = LAB[holdSeg !== null ? holdSeg : idx];
+  $('tag').style.opacity = 1 - fin;
+  const cap = $('cap');
+  if (holdSeg !== null) { cap.textContent = DESC[holdSeg]; cap.style.opacity = 1; }
+  else {
+    cap.textContent = SUB[idx];
+    const s = [.5, 7.0, 14.0][idx], e = [5.6, 12.6, 19.6][idx];
+    cap.style.opacity = T >= 20 ? 0 : seg(T, s, s+.4) * (1 - seg(T, e, e+.4));
+  }
+  $('scrim').style.opacity = fin; $('fin').style.opacity = fin;
+  // controls
+  $('rng').value = T;
+  const sec = Math.floor(T); $('tm').textContent = `0:${String(sec).padStart(2,'0')} / 0:22`;
+  $('pp').textContent = ended ? '↻' : playing ? '⏸' : '▶';
+  winEls.forEach((w, i) => w.classList.toggle('sel', holdSeg === i));
 }
-applyTime(hour); requestAnimationFrame(frame);
 
-$('pp').addEventListener('click', () => { playing = !playing; $('pp').textContent = playing ? '⏸' : '▶'; });
-$('rng').addEventListener('input', e => { hour = parseFloat(e.target.value); applyTime(hour); });
-window.setHour = h => { hour = h; applyTime(h); };
+/* ---------- loop ---------- */
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(.1, (now - last)/1000); last = now;
+  if (playing || holdSeg !== null) {
+    T += dt;
+    if (holdSeg !== null) { if (T > STABLE[holdSeg][1]) T = JUMP[holdSeg]; }
+    else if (T >= TOTAL) { T = TOTAL; playing = false; ended = true; }
+  }
+  render(); requestAnimationFrame(frame);
+}
+function selectWin(i) { holdSeg = i; playing = false; ended = false; T = JUMP[i]; render(); }
+$('pp').addEventListener('click', () => {
+  if (ended || T >= TOTAL) { T = 0; ended = false; playing = true; holdSeg = null; }
+  else if (playing) { playing = false; holdSeg = null; }
+  else { playing = true; holdSeg = null; }
+  render();
+});
+$('rng').addEventListener('input', e => { T = parseFloat(e.target.value); holdSeg = null; ended = false; if (T >= TOTAL) { ended = true; playing = false; } render(); });
+document.addEventListener('keydown', e => { if (e.key === 'h' || e.key === 'H') document.body.classList.toggle('clean'); if (e.key === ' ' && e.target === document.body) { e.preventDefault(); $('pp').click(); } });
+$('hide').addEventListener('click', () => document.body.classList.add('clean'));
+$('uihit').addEventListener('click', () => document.body.classList.remove('clean'));
+if (/clean/.test(location.search + location.hash)) document.body.classList.add('clean');
+window.setT = t => { T = t; holdSeg = null; playing = false; ended = false; render(); };
+render(); requestAnimationFrame(frame);
 </script>
 </body>
 </html>
