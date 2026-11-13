@@ -5,231 +5,313 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>고래 영어학원</title>
 <style>
-  :root { --paper:#f4efe6; --ink:#2a2622; --glow:0; }
-  html,body { margin:0; height:100%; background:var(--paper); transition:none; }
-  body { display:flex; align-items:center; justify-content:center; font-family:system-ui,sans-serif; }
-  svg { width:100%; max-width:1000px; height:auto; touch-action:none; user-select:none; }
-  .ln { fill:none; stroke:var(--ink); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
-  .fl { fill:var(--paper); stroke:var(--ink); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
-  .thin { stroke-width:1; }
-  .ink { fill:var(--ink); stroke:none; }
-  .hit { cursor:pointer; }
-  .steam path { fill:none; stroke:var(--ink); stroke-width:1.4; stroke-linecap:round; opacity:0;
-                stroke-dasharray:30; animation:rise 3.2s ease-in infinite; }
-  .steam path:nth-child(2){ animation-delay:1s } .steam path:nth-child(3){ animation-delay:2s }
-  @keyframes rise { 0%{opacity:0; stroke-dashoffset:30; transform:translateY(0)}
-                    30%{opacity:.8} 100%{opacity:0; stroke-dashoffset:-10; transform:translateY(-26px)} }
-  #tail { transform-origin:0 0; animation:wag 2.4s ease-in-out infinite; }
-  @keyframes wag { 50%{ transform:rotate(18deg) } }
-  #bubble text { font-size:13px; fill:var(--ink); text-anchor:middle; }
+  :root { --paper:#f4efe6; --ink:#2a2622; }
+  html,body { margin:0; height:100%; background:var(--paper); }
+  body { display:flex; align-items:center; justify-content:center; font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
+  svg { width:100%; max-width:1100px; height:auto; touch-action:none; user-select:none; -webkit-user-select:none; }
+  .ln   { fill:none; stroke:var(--ink); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+  .fl   { fill:var(--paper); stroke:var(--ink); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+  .thin { stroke-width:.9; }
+  .ink  { fill:var(--ink); stroke:none; }
+  .tint { fill:var(--ink); fill-opacity:.1; stroke:none; }
+  .hit  { cursor:pointer; }
+  text  { fill:var(--ink); }
+  .cloud { animation:drift 90s linear infinite alternate; }
+  .cloud.b { animation-duration:120s; animation-direction:alternate-reverse; }
+  @keyframes drift { from{transform:translateX(-30px)} to{transform:translateX(60px)} }
+  .wave { animation:sway 5s ease-in-out infinite alternate; }
+  @keyframes sway { from{transform:translateX(-8px)} to{transform:translateX(8px)} }
+  .spout path { fill:none; stroke:var(--ink); stroke-width:1.4; stroke-linecap:round; stroke-dasharray:40; opacity:0;
+                animation:spray 3.6s ease-out infinite; }
+  .spout path:nth-child(2){ animation-delay:.12s } .spout path:nth-child(3){ animation-delay:.24s }
+  .spout.burst path { animation-duration:1s; stroke-width:2; }
+  @keyframes spray { 0%{opacity:0; stroke-dashoffset:40} 12%{opacity:.9} 60%{opacity:.7; stroke-dashoffset:0} 100%{opacity:0; stroke-dashoffset:-14} }
+  #lantern { transform-origin:0 0; animation:swing 3.4s ease-in-out infinite alternate; }
+  @keyframes swing { from{transform:rotate(-5deg)} to{transform:rotate(5deg)} }
   #bubble { opacity:0; transition:opacity .25s; pointer-events:none; }
-  #hint { position:fixed; bottom:12px; left:0; right:0; text-align:center; font-size:13px; color:var(--ink); opacity:.55; }
+  #bubble text { font-size:13px; text-anchor:middle; font-weight:600; }
+  #hint { position:fixed; bottom:10px; left:0; right:0; text-align:center; font-size:13px; color:var(--ink); opacity:.55; pointer-events:none; }
 </style>
 </head>
 <body>
 <svg id="s" viewBox="0 0 800 450" aria-label="고래 영어학원 선화 애니메이션">
-  <!-- sky: stars -->
-  <g id="stars" opacity="0"></g>
+  <defs><clipPath id="seaClip"><rect x="0" y="396" width="288" height="60"/></clipPath></defs>
 
-  <!-- sun / moon -->
-  <path id="arc" class="ln thin" stroke-dasharray="2 8" d="M60 250 Q400 -60 740 250"/>
+  <g id="stars" opacity="0"></g>
+  <path class="ln thin" stroke-dasharray="2 8" d="M40 230 Q400 -80 760 230"/>
   <g id="sun" class="hit">
-    <circle r="26" fill="transparent"/>
+    <circle r="28" fill="transparent"/>
     <circle id="sunDisc" r="16" class="fl"/>
     <g id="rays"></g>
   </g>
 
-  <!-- ground -->
-  <path class="ln" d="M0 380 H800"/>
-  <path class="ln thin" d="M0 392 H800 M0 404 H800" opacity=".5"/>
-  <g id="cobbles" class="ln thin" opacity=".5"></g>
+  <!-- clouds & birds -->
+  <g class="cloud"><path class="ln thin" d="M90 70 q8 -10 18 -4 q8 -12 22 -2 q12 -4 14 6 M100 78 H150 M70 84 H110"/></g>
+  <g class="cloud b"><path class="ln thin" d="M560 50 q8 -10 18 -4 q8 -12 22 -2 q12 -4 14 6 M570 58 H620"/></g>
+  <g class="cloud b"><path class="ln thin" d="M250 130 h60 M270 137 h40"/></g>
+  <path class="ln thin" d="M470 40 q4 -5 8 0 q4 -5 8 0 M495 52 q3 -4 6 0 q3 -4 6 0"/>
 
-  <!-- bakery building -->
-  <g id="bakery">
-    <!-- whale on roof -->
-    <g transform="translate(450 80)">
-      <path class="fl" d="M-46 0 Q-46 -26 -14 -28 Q22 -30 40 -10 Q52 -22 62 -18 Q58 -6 48 0 Q56 4 62 14 Q50 14 40 6 Q30 0 -46 0 Z"/>
-      <path class="ln thin" d="M-40 -4 Q-10 2 30 0"/>
-      <circle class="ink" cx="-28" cy="-12" r="2"/>
-      <path class="ln thin" d="M-36 -6 q6 4 12 2"/>
-    </g>
-    <g class="steam" transform="translate(432 52)">
-      <path d="M0 0 q-6 -10 -14 -12"/>
-      <path d="M0 0 q0 -14 0 -22"/>
-      <path d="M0 0 q6 -10 14 -12"/>
-    </g>
-    <!-- body -->
-    <rect class="fl" x="250" y="150" width="400" height="230"/>
-    <!-- roof -->
-    <path class="fl" d="M230 150 L450 80 L670 150 Z"/>
-    <g class="ln thin" id="tiles"></g>
-    <!-- sign -->
-    <rect class="fl" x="370" y="162" width="160" height="34" rx="3"/>
-    <text x="450" y="187" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">고래 영어학원</text>
-    <!-- awning -->
-    <path class="fl" d="M270 210 H630 L650 250 H250 Z"/>
-    <g class="ln thin" id="awn"></g>
-    <!-- window (left) -->
-    <rect id="win" class="fl" x="280" y="262" width="150" height="100"/>
-    <rect id="winGlow" x="282" y="264" width="146" height="96" fill="#ffcf6b" opacity="0"/>
-    <path class="ln thin" d="M355 262 V362 M280 312 H430"/>
-    <!-- sill -->
-    <path class="fl" d="M272 362 H438 V370 H272 Z"/>
-    <!-- door -->
-    <rect class="fl" x="500" y="262" width="100" height="118"/>
-    <rect id="doorGlow" x="506" y="270" width="88" height="50" fill="#ffcf6b" opacity="0"/>
-    <rect class="ln thin" x="506" y="270" width="88" height="50"/>
-    <circle class="ink" cx="586" cy="330" r="3"/>
-    <!-- blackboard in window -->
-    <g>
-      <rect class="fl" x="290" y="272" width="55" height="38"/>
-      <text x="317" y="296" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">A B C</text>
-      <path class="ln thin" d="M296 303 H338"/>
+  <!-- far shore -->
+  <path class="ln thin" opacity=".5" d="M0 372 H288 M20 366 H110 M150 360 H260"/>
+
+  <!-- WHALE -->
+  <g id="whale" class="hit" transform="translate(140 372) scale(.9)">
+    <rect x="-110" y="-70" width="270" height="110" fill="transparent"/>
+    <path class="fl" d="M-100 0 C-100 -40 -60 -62 -10 -60 C40 -58 80 -40 105 -34 C120 -48 138 -52 150 -46 C146 -36 136 -28 126 -24 C138 -20 150 -10 152 4 C138 4 124 -4 108 -10 C80 14 30 34 -20 34 C-70 34 -100 24 -100 0 Z"/>
+    <path class="tint" d="M-98 6 C-70 30 -20 34 20 28 C60 22 90 4 108 -10 C80 8 30 22 -20 18 C-60 16 -90 10 -98 6 Z"/>
+    <path class="ln thin" d="M-90 12 Q-40 24 30 14 M-80 20 Q-40 28 10 22 M-98 4 Q-60 14 -18 8"/>
+    <path class="ln thin" d="M-82 -22 q10 -10 20 -8 M-60 -40 q12 -8 26 -4"/>
+    <circle class="ink" cx="-72" cy="-8" r="3"/>
+    <path class="ln thin" d="M-80 -14 q8 -4 14 0"/>
+    <path class="fl" d="M-28 14 Q-8 44 28 48 Q16 30 4 14 Z"/>
+    <circle class="ln thin" cx="-40" cy="-60" r="1.5"/>
+    <g class="spout" transform="translate(-40 -62)">
+      <path d="M0 0 Q-6 -24 -22 -30"/>
+      <path d="M0 0 Q0 -34 0 -44"/>
+      <path d="M0 0 Q6 -24 22 -30"/>
     </g>
   </g>
 
-  <!-- cat on sill -->
-  <g id="cat" class="hit" transform="translate(395 362)">
-    <rect x="-32" y="-44" width="76" height="48" fill="transparent"/>
-    <path class="fl" d="M-30 0 Q-30 -26 -4 -28 Q22 -28 32 -10 Q36 -4 34 0 Z"/>
-    <path class="ln thin" d="M-24 -6 Q0 0 28 -4"/>
-    <circle id="eyeL" class="ink" cx="-16" cy="-14" r="1.5"/>
-    <circle id="eyeR" class="ink" cx="-16" cy="-14" r="0" />
-    <g transform="translate(32 -6)"><path id="tail" class="fl" d="M0 0 Q10 -4 14 -16 Q18 -8 26 -8 Q20 -2 22 6 Q10 4 0 4 Z"/></g>
-    <path class="ln thin" d="M-6 -28 q-2 -8 -8 -10 M-6 -28 q2 -8 8 -10"/>
+  <!-- SEA (covers lower whale) -->
+  <rect x="0" y="396" width="288" height="60" fill="var(--paper)"/>
+  <path id="seaTop" class="ln" d=""/>
+  <g clip-path="url(#seaClip)" id="waves" class="ln thin" opacity=".7"></g>
+
+  <!-- quay & street -->
+  <path class="ln" d="M288 380 H800 M288 380 V450"/>
+  <g id="quay" class="ln thin" opacity=".55"></g>
+  <path class="ln thin" opacity=".5" d="M288 392 H800 M288 406 H800 M288 422 H800"/>
+
+  <!-- ACADEMY -->
+  <g id="school">
+    <!-- walls -->
+    <rect class="fl" x="330" y="168" width="360" height="212"/>
+    <path class="ln thin" d="M330 244 H690"/>
+    <!-- roof -->
+    <path class="fl" d="M308 172 L400 110 H620 L712 172 Z"/>
+    <g id="tiles" class="ln thin"></g>
+    <path class="ln" d="M400 110 H620"/>
+    <path class="fl" d="M296 176 H724 V168 H296 Z"/>
+    <!-- upper windows -->
+    <g id="uw"></g>
+    <!-- sign -->
+    <rect class="fl" x="438" y="248" width="144" height="34" rx="3"/>
+    <rect class="ln thin" x="442" y="252" width="136" height="26" rx="2"/>
+    <text x="510" y="268" text-anchor="middle" font-size="16" font-weight="800">고래 영어학원</text>
+    <text x="510" y="276" text-anchor="middle" font-size="6.5" letter-spacing="2.5">WHALE ENGLISH</text>
+    <!-- awning -->
+    <g id="awning"></g>
+    <!-- big window with blackboard -->
+    <rect class="fl" x="350" y="318" width="120" height="56"/>
+    <rect class="glow" x="352" y="320" width="116" height="52" fill="#ffcf6b" opacity="0"/>
+    <path class="ln thin" d="M410 318 V374"/>
+    <path class="fl" d="M344 374 H476 V380 H344 Z"/>
+    <g id="board" class="hit">
+      <rect class="fl" x="358" y="324" width="104" height="44"/>
+      <rect class="ln thin" x="361" y="327" width="98" height="38"/>
+      <text id="boardText" x="410" y="352" text-anchor="middle" font-size="20" font-weight="700">ABC</text>
+      <path class="ln thin" d="M370 360 H450"/>
+    </g>
+    <!-- plants -->
+    <g class="ln thin"><path d="M486 380 q-4 -16 2 -26 M492 380 q2 -18 10 -24 M498 380 q6 -10 4 -18"/></g>
+    <!-- door -->
+    <rect class="fl" x="530" y="318" width="60" height="62"/>
+    <rect class="glow" x="534" y="322" width="52" height="40" fill="#ffcf6b" opacity="0"/>
+    <rect class="ln thin" x="534" y="322" width="52" height="40"/>
+    <path class="ln thin" d="M560 322 V362 M534 342 H586"/>
+    <circle class="ink" cx="552" cy="350" r="2"/>
+    <!-- lantern -->
+    <g transform="translate(520 294)"><g id="lantern">
+      <path class="ln thin" d="M0 -4 V4"/>
+      <ellipse class="fl" cx="0" cy="12" rx="8" ry="10"/>
+      <ellipse class="glow" cx="0" cy="12" rx="6" ry="8" fill="#ffcf6b" opacity="0"/>
+      <path class="ln thin" d="M-6 6 H6 M-8 12 H8 M-6 18 H6"/>
+    </g></g>
+    <!-- right window -->
+    <rect class="fl" x="610" y="326" width="62" height="48"/>
+    <rect class="glow" x="612" y="328" width="58" height="44" fill="#ffcf6b" opacity="0"/>
+    <path class="ln thin" d="M641 326 V374 M610 350 H672"/>
+    <path class="fl" d="M604 374 H678 V380 H604 Z"/>
   </g>
 
   <!-- street lamp -->
   <g id="lamp">
-    <path class="ln" d="M720 380 V270 Q720 255 705 255"/>
-    <rect class="fl" x="694" y="255" width="22" height="22" rx="4"/>
-    <circle id="lampGlow" cx="705" cy="266" r="40" fill="#ffcf6b" opacity="0"/>
+    <path class="ln" d="M754 380 V262 Q754 250 742 250"/>
+    <path class="ln thin" d="M748 380 h12"/>
+    <path class="fl" d="M731 250 h22 l-3 -10 h-16 Z"/>
+    <rect class="fl" x="734" y="250" width="16" height="18" rx="3"/>
+    <circle class="glow2" cx="742" cy="260" r="46" fill="#ffcf6b" opacity="0"/>
   </g>
 
-  <!-- teacher -->
-  <g id="baker" class="hit" transform="translate(150 380)">
-    <rect x="-24" y="-92" width="48" height="94" fill="transparent"/>
-    <g id="flip">
-      <g id="legs">
-        <path id="legA" class="ln" d="M0 -30 L0 0"/>
-        <path id="legB" class="ln" d="M0 -30 L0 0"/>
-      </g>
-      <g id="upper">
-        <path class="fl" d="M-9 -30 Q-12 -58 0 -62 Q12 -58 9 -30 Z"/>
-        <path class="ln thin" d="M-9 -44 H9"/>
-        <circle class="fl" cx="0" cy="-72" r="9"/>
-        <path class="fl" d="M-9 -78 Q-12 -92 0 -92 Q12 -92 9 -78 Z"/>
-        <circle class="ink" cx="3" cy="-72" r="1.2"/>
-        <!-- arm + tray -->
-        <path class="ln" d="M2 -56 L16 -46"/>
-        <g id="tray" transform="translate(16 -46)">
-          <rect class="fl" x="0" y="-5" width="26" height="5"/>
-          <rect class="fl" x="3" y="-10" width="22" height="5"/>
-          <rect class="fl" x="1" y="-15" width="24" height="5"/>
-        </g>
-      </g>
-    </g>
-  </g>
+  <g id="people"></g>
 
-  <!-- speech bubble -->
   <g id="bubble">
     <rect id="bb" class="fl" x="-44" y="-24" width="88" height="26" rx="12"/>
     <path class="fl" d="M-6 2 L0 10 L6 2"/>
     <text id="bt" y="-6"></text>
   </g>
 </svg>
-<div id="hint">해를 끌어 시간을 바꾸고, 선생님 · 아기 고래 · 칠판을 눌러 보세요</div>
+<div id="hint">해를 끌어 시간을 바꿔 보세요 · 선생님, 아이들, 고래, 칠판을 눌러 보세요</div>
 
 <script>
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const svg = $('s');
-const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent||svg).appendChild(e); return e; };
 
-// decorations ---------------------------------------------------
-for (let x = 0; x < 800; x += 36) mk('path', { d: `M${x} 392 v12` }, $('cobbles'));
-for (let i = 0; i < 9; i++) mk('path', { d: `M${268 + i*20} 120 L${440 + i*11} ${100 + i*2}` , opacity: 0 }, $('tiles'));
-for (let y = 112; y < 148; y += 8) mk('path', { d: `M${450 - (y-80)*3.14} ${y} H${450 + (y-80)*3.14}` }, $('tiles'));
-for (let x = 270; x <= 630; x += 30) mk('path', { d: `M${x} 210 L${x - 4 - (x-450)*0.02*0} 250` }, $('awn'));
-for (let i = 0; i < 28; i++) mk('circle', { cx: Math.random()*800, cy: Math.random()*200, r: 0.8 + Math.random()*1.2, fill: '#fff' }, $('stars'));
-for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6;
-  mk('path', { class: 'ln thin', d: `M${Math.cos(a)*21} ${Math.sin(a)*21} L${Math.cos(a)*29} ${Math.sin(a)*29}` }, $('rays')); }
+/* ---------- static decoration ---------- */
+for (let i = 0; i < 12; i++) { const a = i*Math.PI/6;
+  mk('path', { class:'ln thin', d:`M${Math.cos(a)*21} ${Math.sin(a)*21} L${Math.cos(a)*30} ${Math.sin(a)*30}` }, $('rays')); }
+for (let i = 0; i < 34; i++) mk('circle', { cx:Math.random()*800, cy:Math.random()*230, r:.7+Math.random()*1.3, fill:'#fff' }, $('stars'));
 
-// time of day ---------------------------------------------------
-let t = 0.28;          // 0..1 along arc; light = sin(pi t)
-const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
-const DAY_P = [244,239,230], NIGHT_P = [20,26,48], DAY_I = [42,38,34], NIGHT_I = [225,228,240];
+// roof tiles: rows + staggered ticks
+for (let y = 116, r = 0; y < 170; y += 6, r++) {
+  const xl = 400 - (y-110)*1.5, xr = 620 + (y-110)*1.5;
+  mk('path', { d:`M${xl} ${y} H${xr}` }, $('tiles'));
+  for (let x = xl + 8 + (r%2)*7; x < xr - 4; x += 14) mk('path', { d:`M${x} ${y} v6`, opacity:.7 }, $('tiles'));
+}
+// quay stones
+for (let y = 392, r = 0; y < 450; y += 14, r++) for (let x = 288 + (r%2)*16; x < 800; x += 32) mk('path', { d:`M${x} ${y} v14` }, $('quay'));
+// sea surface + waves
+let d = 'M0 396'; for (let x = 0; x < 288; x += 24) d += ` q6 -5 12 0 t12 0`; $('seaTop').setAttribute('d', d);
+for (let r = 0; r < 3; r++) {
+  const g = mk('g', { class:'wave', style:`animation-delay:${-r*1.7}s` }, $('waves'));
+  for (let x = -10 + (r%2)*14; x < 300; x += 40) mk('path', { d:`M${x} ${412+r*14} q5 -4 10 0 t10 0 t10 0` }, g);
+}
+// upper windows (kids peeking)
+const kidHeads = [];
+[[352,1],[430,0],[524,0],[602,1]].forEach(([x, kid], i) => {
+  mk('rect', { class:'fl', x, y:186, width:50, height:46 }, $('uw'));
+  mk('rect', { class:'glow', x:x+2, y:188, width:46, height:42, fill:'#ffcf6b', opacity:0 }, $('uw'));
+  mk('path', { class:'ln thin', d:`M${x+25} 186 V232 M${x} 209 H${x+50}` }, $('uw'));
+  mk('path', { class:'fl', d:`M${x-4} 232 H${x+54} V238 H${x-4} Z` }, $('uw'));
+  if (kid) {
+    const g = mk('g', {}, $('uw'));
+    mk('path', { class:'fl', d:`M${x+8} 232 Q${x+9} 218 ${x+25} 218 Q${x+41} 218 ${x+42} 232 Z` }, g);
+    mk('circle', { class:'fl', cx:x+25, cy:210, r:8 }, g);
+    mk('path', { class:'ink', d:`M${x+17} 209 Q${x+17} 200 ${x+25} 201 Q${x+33} 200 ${x+33} 209 Q${x+27} 205 ${x+17} 209 Z` }, g);
+    mk('rect', { x:x+2, y:188, width:46, height:44, fill:'transparent' }, g);
+    kidHeads.push({ g, ph: i });
+    g.classList.add('hit');
+    g.addEventListener('click', () => say(i ? 'Good morning!' : 'I like whales!', x+25, 182));
+  } else {
+    mk('path', { class:'ln thin', d:`M${x+4} 190 q4 14 0 38 M${x+46} 190 q-4 14 0 38` }, $('uw'));
+  }
+});
+// awning
+{ const g = $('awning'); let dd = 'M336 290 H684 L694 316'; for (let x = 694; x > 326; x -= 28) dd += ` q-14 10 -28 0`; dd += ' Z';
+  mk('path', { class:'fl', d:dd }, g);
+  for (let x = 336, i = 0; x < 672; x += 28, i++) {
+    const o = (x-336)/348*10, o2 = (x+28-336)/348*10;
+    if (i%2===0) mk('path', { class:'tint', d:`M${x} 290 H${x+28} L${x+28+o2} 316 q-14 10 -28 0 Z` }, g);
+    mk('path', { class:'ln thin', d:`M${x} 290 L${x+o} 316` }, g); } }
+
+/* ---------- people ---------- */
+const people = [];
+function person({ sc, hair, coat, glasses, books, pack, off }) {
+  const root = mk('g', { class:'hit' }, $('people'));
+  const f = mk('g', {}, root);
+  const longCoat = coat === 'long';
+  f.innerHTML = `
+    <path class="ln" id="la"/><path class="ln" id="lb"/>
+    ${pack ? '<rect class="fl" x="-13" y="-50" width="8" height="18" rx="2"/>' : ''}
+    <path class="fl" d="${longCoat ? 'M-10 -16 L-7 -50 Q0 -54 7 -50 L10 -16 Z' : 'M-8 -26 L-7 -50 Q0 -54 7 -50 L8 -26 Z'}"/>
+    ${longCoat ? '<path class="ln thin" d="M0 -48 V-16"/>' : ''}
+    <path class="ln" id="armB"/>
+    <circle class="fl" cx="0" cy="-59" r="7.5"/>
+    ${hair === 'bun' ? '<circle class="ink" cx="-5" cy="-68" r="3.6"/><path class="ink" d="M-8 -60 Q-9 -69 0 -68 Q8 -69 8 -60 Q4 -64 -8 -60 Z"/>' :
+                       '<path class="ink" d="M-8 -59 Q-9 -69 0 -68 Q9 -69 8 -59 Q3 -63 -8 -59 Z"/>'}
+    <circle class="ink" cx="3.5" cy="-58" r="1.1"/>
+    ${glasses ? '<circle class="ln thin" cx="3.5" cy="-58" r="3"/><path class="ln thin" d="M0.5 -58 H-6"/>' : ''}
+    <path class="ln" d="M2 -49 L${books ? 12 : 9} ${books ? -38 : -30}"/>
+    ${books ? '<g transform="translate(12 -38)"><rect class="fl" x="-3" y="-5" width="22" height="5"/><rect class="fl" x="-1" y="-10" width="19" height="5"/><rect class="fl" x="-2" y="-15" width="20" height="5"/></g>' : ''}
+  `;
+  const p = { root, f, sc, off, la: f.querySelector('#la'), lb: f.querySelector('#lb'), armB: f.querySelector('#armB'), hop: 0, books };
+  la_ids: { p.la.removeAttribute('id'); p.lb.removeAttribute('id'); p.armB.removeAttribute('id'); }
+  people.push(p); return p;
+}
+const teacher = person({ sc:1.3, hair:'bun',   coat:'long',  glasses:true, books:true, off:0 });
+const kid1    = person({ sc:.92, hair:'short', coat:'short', pack:true,    off:44 });
+const kid2    = person({ sc:.84, hair:'bun',   coat:'short', pack:true,    off:80 });
+
+let bx = 360, dir = 1, pause = 0, phase = 0, last = performance.now();
+const LEFT = 320, RIGHT = 700;
+const sx = (p) => bx - dir * p.off;
+
+function render(p, ph, moving) {
+  const s = moving ? Math.sin(ph) : 0, c = moving ? Math.cos(ph) : 0;
+  const foot = (k, sg) => `M0 -26 L${sg*k*13} ${-1 - Math.max(0, -sg*c)*3}`;
+  p.la.setAttribute('d', foot(s,  1)); p.lb.setAttribute('d', foot(s, -1));
+  p.armB.setAttribute('d', `M-2 -49 L${-s*7 - 1} -31`);
+  const bob = moving ? Math.abs(Math.sin(ph))*1.6 : 0;
+  const hop = p.hop > 0 ? Math.sin(p.hop*Math.PI)*12 : 0;
+  p.root.setAttribute('transform', `translate(${sx(p)} ${380 - bob - hop}) scale(${p.sc})`);
+  p.f.setAttribute('transform', `scale(${dir} 1)`);
+}
+
+/* ---------- time of day ---------- */
+let t = 0.3;
+const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i]-v)*k));
+const DAY_P=[244,239,230], NIGHT_P=[18,24,46], DAY_I=[42,38,34], NIGHT_I=[226,229,241];
+let night = 0;
 function setTime(v) {
   t = Math.min(1, Math.max(0, v));
-  const light = Math.sin(Math.PI * t);
-  const k = Math.min(1, Math.max(0, (0.45 - light) / 0.35));   // 0 day .. 1 night
-  const root = document.documentElement.style;
-  root.setProperty('--paper', `rgb(${mix(DAY_P, NIGHT_P, k)})`);
-  root.setProperty('--ink',   `rgb(${mix(DAY_I, NIGHT_I, k)})`);
-  const x = 60 + 680 * t;
-  const y = (1-t)*(1-t)*250 + 2*(1-t)*t*(-60) + t*t*250;       // point on quad Bezier
+  const light = Math.sin(Math.PI*t);
+  night = Math.min(1, Math.max(0, (0.45 - light)/0.35));
+  const r = document.documentElement.style;
+  r.setProperty('--paper', `rgb(${mix(DAY_P, NIGHT_P, night)})`);
+  r.setProperty('--ink',   `rgb(${mix(DAY_I, NIGHT_I, night)})`);
+  const x = 40 + 720*t, u = 1-t, y = u*u*230 + 2*u*t*(-80) + t*t*230;
   $('sun').setAttribute('transform', `translate(${x} ${y})`);
-  $('rays').style.opacity = 1 - k;
-  $('sunDisc').style.fill = k > .5 ? 'var(--ink)' : 'var(--paper)';
-  $('sunDisc').setAttribute('r', k > .5 ? 12 : 16);
-  $('stars').setAttribute('opacity', k * .9);
-  for (const id of ['winGlow','doorGlow']) $(id).setAttribute('opacity', k * .75);
-  $('lampGlow').setAttribute('opacity', k * .35);
-  document.body.style.background = 'var(--paper)';
+  $('rays').style.opacity = 1 - night;
+  $('sunDisc').style.fill = night > .5 ? 'var(--ink)' : 'var(--paper)';
+  $('sunDisc').setAttribute('r', night > .5 ? 12 : 16);
+  $('stars').setAttribute('opacity', night*.9);
+  document.querySelectorAll('.glow').forEach(e => e.setAttribute('opacity', night*.8));
+  document.querySelectorAll('.glow2').forEach(e => e.setAttribute('opacity', night*.3));
 }
 let dragging = false;
-function pointerT(e) {
-  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
-  const q = p.matrixTransform(svg.getScreenCTM().inverse());
-  setTime((q.x - 60) / 680);
-}
 $('sun').addEventListener('pointerdown', e => { dragging = true; e.preventDefault(); });
-window.addEventListener('pointermove', e => { if (dragging) pointerT(e); });
+window.addEventListener('pointermove', e => { if (!dragging) return;
+  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  setTime((p.matrixTransform(svg.getScreenCTM().inverse()).x - 40)/720); });
 window.addEventListener('pointerup', () => dragging = false);
 
-// speech bubble --------------------------------------------------
-let bubbleTimer;
+/* ---------- bubble ---------- */
+let bt;
 function say(text, x, y) {
   $('bt').textContent = text;
-  const w = Math.max(70, text.length * 14 + 24);
+  const w = Math.max(70, text.length*8.5 + 26);
   $('bb').setAttribute('x', -w/2); $('bb').setAttribute('width', w);
-  $('bubble').setAttribute('transform', `translate(${x} ${y})`);
-  $('bubble').style.opacity = 1;
-  clearTimeout(bubbleTimer);
-  bubbleTimer = setTimeout(() => $('bubble').style.opacity = 0, 1600);
+  $('bubble').setAttribute('transform', `translate(${Math.min(770, Math.max(50, x))} ${y})`);
+  $('bubble').style.opacity = 1; clearTimeout(bt); bt = setTimeout(() => $('bubble').style.opacity = 0, 1700);
 }
 
-// baker walk ------------------------------------------------------
-let bx = 150, dir = 1, pause = 0, hop = 0, last = performance.now(), phase = 0;
-const LEFT = 120, RIGHT = 690;
-function leg(el, a) { el.setAttribute('d', `M0 -30 L${Math.sin(a)*14} ${-Math.abs(Math.cos(a))*3}`); }
+/* ---------- main loop ---------- */
 function frame(now) {
-  const dt = Math.min(50, now - last) / 1000; last = now;
-  if (pause > 0) { pause -= dt; leg($('legA'), 0); leg($('legB'), 0); }
-  else {
-    bx += dir * 45 * dt; phase += dt * 7;
-    leg($('legA'), phase); leg($('legB'), phase + Math.PI);
-    if (bx > RIGHT || bx < LEFT) { dir *= -1; bx = Math.min(RIGHT, Math.max(LEFT, bx)); pause = 0.8; }
-  }
-  hop = Math.max(0, hop - dt * 3);
-  const bob = Math.abs(Math.sin(phase)) * 2 - Math.sin(hop * Math.PI) * 14;
-  $('baker').setAttribute('transform', `translate(${bx} ${380 - (pause > 0 ? 0 : bob) + (hop ? -Math.sin(hop*Math.PI)*14 + bob : 0)})`);
-  $('flip').setAttribute('transform', `scale(${dir} 1)`);
-  $('tray').setAttribute('transform', `translate(16 ${-46 + Math.sin(phase * 2) * 1.2 - hop * 6})`);
-  // cat blink
-  const blink = (now % 4000) < 140;
-  $('eyeL').setAttribute('r', blink ? 0.4 : 1.5); $('eyeR').setAttribute('r', blink ? 0.4 : 1.5);
+  const dt = Math.min(50, now-last)/1000; last = now;
+  const moving = pause <= 0;
+  if (moving) {
+    bx += dir*42*dt; phase += dt*7;
+    if (bx > RIGHT || bx < LEFT) { dir *= -1; bx = Math.min(RIGHT, Math.max(LEFT, bx)); pause = .9; }
+  } else pause -= dt;
+  people.forEach((p, i) => { p.hop = Math.max(0, p.hop - dt*2.6); render(p, phase - i*.9, moving && p.hop === 0 || moving); });
+  const k = now/1000;
+  $('whale').setAttribute('transform', `translate(140 ${372 + Math.sin(k*.9)*5}) rotate(${Math.sin(k*.9+1)*1.6}) scale(.9)`);
+  kidHeads.forEach(h => h.g.setAttribute('transform', `translate(0 ${Math.sin(k*1.6 + h.ph*2)*1.8})`));
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
-$('baker').addEventListener('click', () => {
-  hop = 1; pause = 1.4;
-  say('Hello, class!', bx, 380 - 118);
+/* ---------- interactions ---------- */
+function click(p, text) { p.root.addEventListener('click', () => { p.hop = 1; if (p === teacher) pause = 1.3; say(text, sx(p), 380 - 80*p.sc - 20); }); }
+click(teacher, 'Hello, class!'); click(kid1, 'Hi, teacher!'); click(kid2, "I'm a whale!");
+$('whale').addEventListener('click', () => {
+  const sp = document.querySelector('#whale .spout'); sp.classList.remove('burst'); void sp.getBBox(); sp.classList.add('burst');
+  setTimeout(() => sp.classList.remove('burst'), 2200); say('뿌우~ Welcome!', 130, 270);
 });
-$('cat').addEventListener('click', () => say('뿌우~ Hi!', 395, 362 - 56));
-$('win').addEventListener('click', () => say('A, B, C! 따라 해요', 355, 255));
-$('win').style.cursor = 'pointer';
+const words = ['ABC','Apple','Whale','Hello!','Study','Friend']; let wi = 0;
+$('board').addEventListener('click', () => { wi = (wi+1) % words.length; $('boardText').textContent = words[wi]; say('Repeat after me!', 410, 312); });
 
 setTime(t);
 </script>
