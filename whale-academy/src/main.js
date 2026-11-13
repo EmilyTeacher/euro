@@ -175,7 +175,7 @@ function render() {
   // shadows on the pavement: short at 2:15, long and soft at 5:10, gone at night
   const k = lerp(0.25, 1, smooth(0.585, 0.728, tau)) * (1 - smooth(0.735, 0.79, tau));
   const Lb = 120 * k, Wd = 44 * k;
-  shadow.setAttribute('d', `M-10 ${BASE} L${W + 10} ${BASE} L${W + 10 - Lb} ${BASE + Wd} L${-10 - Lb} ${BASE + Wd}Z`); shadow.setAttribute('opacity', 0.1 * (k > 0 ? 1 : 0));
+  shadow.setAttribute('d', `M-10 ${BASE} L${W + 10 + Lb} ${BASE} L${W + 10} ${BASE + Wd} L${-10 - Lb} ${BASE + Wd}Z`); shadow.setAttribute('opacity', 0.1 * (k > 0 ? 1 : 0));
   lampX.forEach((x, i) => { lampShadow[i].setAttribute('d', `M${x} 460 l${(-150 * k).toFixed(1)} ${(14 * k).toFixed(1)}`); lampShadow[i].setAttribute('opacity', 0.09); });
   // lessons (pure functions of time)
   rooms[0].update(T, T); rooms[1].update(T - START[1], T); rooms[2].update(T - START[2], T);
