@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>새벽 빵집</title>
+<title>고래 영어학원</title>
 <style>
   :root { --paper:#f4efe6; --ink:#2a2622; --glow:0; }
   html,body { margin:0; height:100%; background:var(--paper); transition:none; }
@@ -27,7 +27,7 @@
 </style>
 </head>
 <body>
-<svg id="s" viewBox="0 0 800 450" aria-label="새벽 빵집 선화 애니메이션">
+<svg id="s" viewBox="0 0 800 450" aria-label="고래 영어학원 선화 애니메이션">
   <!-- sky: stars -->
   <g id="stars" opacity="0"></g>
 
@@ -46,13 +46,17 @@
 
   <!-- bakery building -->
   <g id="bakery">
-    <!-- chimney -->
-    <rect class="fl" x="560" y="70" width="28" height="70"/>
-    <path class="ln thin" d="M556 70 H592"/>
-    <g class="steam" transform="translate(574 62)">
-      <path d="M0 0 q-8 -10 0 -18 q8 -8 0 -16"/>
-      <path d="M4 0 q-8 -10 0 -18 q8 -8 0 -16"/>
-      <path d="M-4 0 q-8 -10 0 -18 q8 -8 0 -16"/>
+    <!-- whale on roof -->
+    <g transform="translate(450 80)">
+      <path class="fl" d="M-46 0 Q-46 -26 -14 -28 Q22 -30 40 -10 Q52 -22 62 -18 Q58 -6 48 0 Q56 4 62 14 Q50 14 40 6 Q30 0 -46 0 Z"/>
+      <path class="ln thin" d="M-40 -4 Q-10 2 30 0"/>
+      <circle class="ink" cx="-28" cy="-12" r="2"/>
+      <path class="ln thin" d="M-36 -6 q6 4 12 2"/>
+    </g>
+    <g class="steam" transform="translate(432 52)">
+      <path d="M0 0 q-6 -10 -14 -12"/>
+      <path d="M0 0 q0 -14 0 -22"/>
+      <path d="M0 0 q6 -10 14 -12"/>
     </g>
     <!-- body -->
     <rect class="fl" x="250" y="150" width="400" height="230"/>
@@ -61,7 +65,7 @@
     <g class="ln thin" id="tiles"></g>
     <!-- sign -->
     <rect class="fl" x="370" y="162" width="160" height="34" rx="3"/>
-    <text x="450" y="187" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">새벽 빵집</text>
+    <text x="450" y="187" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">고래 영어학원</text>
     <!-- awning -->
     <path class="fl" d="M270 210 H630 L650 250 H250 Z"/>
     <g class="ln thin" id="awn"></g>
@@ -76,28 +80,23 @@
     <rect id="doorGlow" x="506" y="270" width="88" height="50" fill="#ffcf6b" opacity="0"/>
     <rect class="ln thin" x="506" y="270" width="88" height="50"/>
     <circle class="ink" cx="586" cy="330" r="3"/>
-    <!-- oven in window: arched oven with steam -->
-    <g transform="translate(318 330)">
-      <path class="ln" d="M0 32 V10 Q0 -6 16 -6 Q32 -6 32 10 V32 Z"/>
-      <path class="ln thin" d="M8 32 V16 Q8 8 16 8 Q24 8 24 16 V32"/>
-    </g>
-    <g class="steam" transform="translate(334 320)">
-      <path d="M0 0 q-6 -8 0 -14 q6 -6 0 -12"/>
-      <path d="M5 0 q-6 -8 0 -14 q6 -6 0 -12"/>
-      <path d="M-5 0 q-6 -8 0 -14 q6 -6 0 -12"/>
+    <!-- blackboard in window -->
+    <g>
+      <rect class="fl" x="290" y="272" width="55" height="38"/>
+      <text x="317" y="296" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">A B C</text>
+      <path class="ln thin" d="M296 303 H338"/>
     </g>
   </g>
 
   <!-- cat on sill -->
   <g id="cat" class="hit" transform="translate(395 362)">
-    <rect x="-30" y="-44" width="70" height="48" fill="transparent"/>
-    <path class="fl" d="M-18 0 Q-22 -22 -4 -26 Q14 -28 16 -10 Q18 0 14 0 Z"/>
-    <circle class="fl" cx="-6" cy="-32" r="10"/>
-    <path class="fl" d="M-14 -39 L-12 -49 L-6 -41 M0 -41 L5 -49 L6 -38"/>
-    <circle id="eyeL" class="ink" cx="-10" cy="-33" r="1.5"/>
-    <circle id="eyeR" class="ink" cx="-2" cy="-33" r="1.5"/>
-    <path class="ln thin" d="M-8 -28 l2 2 l2 -2 M-14 -29 l-6 -1 M-14 -27 l-6 2 M0 -29 l6 -1 M0 -27 l6 2"/>
-    <g transform="translate(14 -4)"><path id="tail" class="ln" d="M0 0 Q18 -4 22 -20 Q24 -28 16 -30"/></g>
+    <rect x="-32" y="-44" width="76" height="48" fill="transparent"/>
+    <path class="fl" d="M-30 0 Q-30 -26 -4 -28 Q22 -28 32 -10 Q36 -4 34 0 Z"/>
+    <path class="ln thin" d="M-24 -6 Q0 0 28 -4"/>
+    <circle id="eyeL" class="ink" cx="-16" cy="-14" r="1.5"/>
+    <circle id="eyeR" class="ink" cx="-16" cy="-14" r="0" />
+    <g transform="translate(32 -6)"><path id="tail" class="fl" d="M0 0 Q10 -4 14 -16 Q18 -8 26 -8 Q20 -2 22 6 Q10 4 0 4 Z"/></g>
+    <path class="ln thin" d="M-6 -28 q-2 -8 -8 -10 M-6 -28 q2 -8 8 -10"/>
   </g>
 
   <!-- street lamp -->
@@ -107,7 +106,7 @@
     <circle id="lampGlow" cx="705" cy="266" r="40" fill="#ffcf6b" opacity="0"/>
   </g>
 
-  <!-- baker -->
+  <!-- teacher -->
   <g id="baker" class="hit" transform="translate(150 380)">
     <rect x="-24" y="-92" width="48" height="94" fill="transparent"/>
     <g id="flip">
@@ -124,9 +123,9 @@
         <!-- arm + tray -->
         <path class="ln" d="M2 -56 L16 -46"/>
         <g id="tray" transform="translate(16 -46)">
-          <path class="ln" d="M-4 0 H30"/>
-          <path class="fl" d="M2 0 Q4 -10 12 -10 Q20 -10 22 0 Z"/>
-          <path class="fl" d="M18 0 Q20 -7 25 -7 Q30 -7 30 0 Z"/>
+          <rect class="fl" x="0" y="-5" width="26" height="5"/>
+          <rect class="fl" x="3" y="-10" width="22" height="5"/>
+          <rect class="fl" x="1" y="-15" width="24" height="5"/>
         </g>
       </g>
     </g>
@@ -139,7 +138,7 @@
     <text id="bt" y="-6"></text>
   </g>
 </svg>
-<div id="hint">해를 끌어 시간을 바꾸고, 제빵사 · 고양이 · 창문을 눌러 보세요</div>
+<div id="hint">해를 끌어 시간을 바꾸고, 선생님 · 아기 고래 · 칠판을 눌러 보세요</div>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -226,10 +225,10 @@ requestAnimationFrame(frame);
 
 $('baker').addEventListener('click', () => {
   hop = 1; pause = 1.4;
-  say('갓 구운 빵!', bx, 380 - 118);
+  say('Hello, class!', bx, 380 - 118);
 });
-$('cat').addEventListener('click', () => say('야옹~', 395, 362 - 56));
-$('win').addEventListener('click', () => say('오븐 따끈따끈', 355, 255));
+$('cat').addEventListener('click', () => say('뿌우~ Hi!', 395, 362 - 56));
+$('win').addEventListener('click', () => say('A, B, C! 따라 해요', 355, 255));
 $('win').style.cursor = 'pointer';
 
 setTime(t);
