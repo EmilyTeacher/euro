@@ -3,317 +3,316 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>고래 영어학원</title>
+<title>고래 영어학원 거리</title>
 <style>
-  :root { --paper:#f4efe6; --ink:#2a2622; }
-  html,body { margin:0; height:100%; background:var(--paper); }
-  body { display:flex; align-items:center; justify-content:center; font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
-  svg { width:100%; max-width:1100px; height:auto; touch-action:none; user-select:none; -webkit-user-select:none; }
-  .ln   { fill:none; stroke:var(--ink); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
-  .fl   { fill:var(--paper); stroke:var(--ink); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
-  .thin { stroke-width:.9; }
-  .ink  { fill:var(--ink); stroke:none; }
-  .tint { fill:var(--ink); fill-opacity:.1; stroke:none; }
-  .hit  { cursor:pointer; }
-  text  { fill:var(--ink); }
-  .cloud { animation:drift 90s linear infinite alternate; }
-  .cloud.b { animation-duration:120s; animation-direction:alternate-reverse; }
-  @keyframes drift { from{transform:translateX(-30px)} to{transform:translateX(60px)} }
-  .wave { animation:sway 5s ease-in-out infinite alternate; }
-  @keyframes sway { from{transform:translateX(-8px)} to{transform:translateX(8px)} }
-  .spout path { fill:none; stroke:var(--ink); stroke-width:1.4; stroke-linecap:round; stroke-dasharray:40; opacity:0;
-                animation:spray 3.6s ease-out infinite; }
-  .spout path:nth-child(2){ animation-delay:.12s } .spout path:nth-child(3){ animation-delay:.24s }
-  .spout.burst path { animation-duration:1s; stroke-width:2; }
-  @keyframes spray { 0%{opacity:0; stroke-dashoffset:40} 12%{opacity:.9} 60%{opacity:.7; stroke-dashoffset:0} 100%{opacity:0; stroke-dashoffset:-14} }
-  #lantern { transform-origin:0 0; animation:swing 3.4s ease-in-out infinite alternate; }
-  @keyframes swing { from{transform:rotate(-5deg)} to{transform:rotate(5deg)} }
+  :root { --bg:#f3eee3; --wall:#f7f2e7; --plate:#fbf8ef; --ink:#2b2724; --roofA:#7a4a3a; --roofB:#3f5f60; --roofC:#5c6670;
+          --street:#efe6d6; --winOff:#efe9dc; --winLit:#f3ecd9; --bus:#e0b030; --bri:1; }
+  html,body { margin:0; min-height:100%; background:#e9e6df; }
+  body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:12px;
+         font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; padding:12px 0; box-sizing:border-box; }
+  svg { width:100%; max-width:1100px; height:auto; touch-action:manipulation; user-select:none; -webkit-user-select:none;
+        filter:drop-shadow(0 10px 18px rgba(60,50,40,.22)); }
+  .o { stroke:var(--ink); stroke-width:1; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+  .l { fill:none; stroke:var(--ink); stroke-width:.8; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+  .wall{fill:var(--wall)} .plate{fill:var(--plate)} .rA{fill:var(--roofA)} .rB{fill:var(--roofB)} .rC{fill:var(--roofC)}
+  .wl{fill:var(--winLit)} .wo{fill:var(--winOff)} .ink{fill:var(--ink);stroke:none}
+  .sgt { font-family:Georgia,"Noto Serif KR","Times New Roman",serif; font-weight:700; text-anchor:middle; fill:var(--ink); letter-spacing:.5px; }
+  #label { font-family:Georgia,"Noto Serif KR",serif; font-size:11px; font-weight:700; fill:var(--ink); }
+  .hit { cursor:pointer; }
+  .people { filter:brightness(var(--bri)); }
+  .cloud { animation:drift 80s linear infinite alternate; opacity:.55; }
+  .cloud.b { animation-duration:110s; animation-direction:alternate-reverse; }
+  @keyframes drift { from{transform:translateX(-40px)} to{transform:translateX(70px)} }
   #bubble { opacity:0; transition:opacity .25s; pointer-events:none; }
-  #bubble text { font-size:13px; text-anchor:middle; font-weight:600; }
-  #hint { position:fixed; bottom:10px; left:0; right:0; text-align:center; font-size:13px; color:var(--ink); opacity:.55; pointer-events:none; }
+  #bubble text { font-size:10px; text-anchor:middle; font-weight:600; fill:var(--ink); }
+  #ctl { display:flex; align-items:center; gap:10px; width:min(560px,90%); color:#6b645a; font-size:13px; }
+  #ctl input { flex:1; accent-color:#7a4a3a; }
+  #ctl button { border:1px solid #bfb8aa; background:#f7f3ea; border-radius:8px; padding:4px 12px; cursor:pointer; font-size:14px; }
 </style>
 </head>
 <body>
-<svg id="s" viewBox="0 0 800 450" aria-label="고래 영어학원 선화 애니메이션">
-  <defs><clipPath id="seaClip"><rect x="0" y="396" width="288" height="60"/></clipPath></defs>
-
-  <g id="stars" opacity="0"></g>
-  <path class="ln thin" stroke-dasharray="2 8" d="M40 230 Q400 -80 760 230"/>
-  <g id="sun" class="hit">
-    <circle r="28" fill="transparent"/>
-    <circle id="sunDisc" r="16" class="fl"/>
-    <g id="rays"></g>
-  </g>
-
-  <!-- clouds & birds -->
-  <g class="cloud"><path class="ln thin" d="M90 70 q8 -10 18 -4 q8 -12 22 -2 q12 -4 14 6 M100 78 H150 M70 84 H110"/></g>
-  <g class="cloud b"><path class="ln thin" d="M560 50 q8 -10 18 -4 q8 -12 22 -2 q12 -4 14 6 M570 58 H620"/></g>
-  <g class="cloud b"><path class="ln thin" d="M250 130 h60 M270 137 h40"/></g>
-  <path class="ln thin" d="M470 40 q4 -5 8 0 q4 -5 8 0 M495 52 q3 -4 6 0 q3 -4 6 0"/>
-
-  <!-- far shore -->
-  <path class="ln thin" opacity=".5" d="M0 372 H288 M20 366 H110 M150 360 H260"/>
-
-  <!-- WHALE -->
-  <g id="whale" class="hit" transform="translate(140 372) scale(.9)">
-    <rect x="-110" y="-70" width="270" height="110" fill="transparent"/>
-    <path class="fl" d="M-100 0 C-100 -40 -60 -62 -10 -60 C40 -58 80 -40 105 -34 C120 -48 138 -52 150 -46 C146 -36 136 -28 126 -24 C138 -20 150 -10 152 4 C138 4 124 -4 108 -10 C80 14 30 34 -20 34 C-70 34 -100 24 -100 0 Z"/>
-    <path class="tint" d="M-98 6 C-70 30 -20 34 20 28 C60 22 90 4 108 -10 C80 8 30 22 -20 18 C-60 16 -90 10 -98 6 Z"/>
-    <path class="ln thin" d="M-90 12 Q-40 24 30 14 M-80 20 Q-40 28 10 22 M-98 4 Q-60 14 -18 8"/>
-    <path class="ln thin" d="M-82 -22 q10 -10 20 -8 M-60 -40 q12 -8 26 -4"/>
-    <circle class="ink" cx="-72" cy="-8" r="3"/>
-    <path class="ln thin" d="M-80 -14 q8 -4 14 0"/>
-    <path class="fl" d="M-28 14 Q-8 44 28 48 Q16 30 4 14 Z"/>
-    <circle class="ln thin" cx="-40" cy="-60" r="1.5"/>
-    <g class="spout" transform="translate(-40 -62)">
-      <path d="M0 0 Q-6 -24 -22 -30"/>
-      <path d="M0 0 Q0 -34 0 -44"/>
-      <path d="M0 0 Q6 -24 22 -30"/>
+<svg id="s" viewBox="0 0 800 460" aria-label="고래 영어학원 거리 선화 애니메이션">
+  <defs>
+    <clipPath id="card"><rect x="16" y="16" width="768" height="428" rx="14"/></clipPath>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+    <symbol id="wh" viewBox="0 0 24 12"><path d="M1.5 8 C1.5 3 8 1 13 2 C16 2.5 18 4 19.5 5 C20.5 3 22.5 1.5 23.5 2 C23 4.5 22 6 20.5 7 C22 7.5 23 9 23.5 10.5 C21.5 10.5 20 9.5 19 8.5 C16 11 8 12 1.5 8 Z" fill="var(--wall)" stroke="var(--ink)" stroke-width="1" stroke-linejoin="round"/><circle cx="6" cy="6" r=".9" fill="var(--ink)"/></symbol>
+  </defs>
+  <rect x="16" y="16" width="768" height="428" rx="14" fill="var(--bg)"/>
+  <g clip-path="url(#card)">
+    <g id="stars"></g>
+    <g id="sunmoon"></g>
+    <g id="clouds">
+      <g class="cloud"><path class="l" d="M90 70 q8 -9 18 -4 q8 -11 22 -2 q12 -4 14 6 M80 78 H150"/></g>
+      <g class="cloud b"><path class="l" d="M560 52 q8 -9 18 -4 q8 -11 22 -2 q12 -4 14 6 M552 60 H620"/></g>
+      <g class="cloud b"><path class="l" d="M420 96 h60 M436 103 h38"/></g>
     </g>
-  </g>
-
-  <!-- SEA (covers lower whale) -->
-  <rect x="0" y="396" width="288" height="60" fill="var(--paper)"/>
-  <path id="seaTop" class="ln" d=""/>
-  <g clip-path="url(#seaClip)" id="waves" class="ln thin" opacity=".7"></g>
-
-  <!-- quay & street -->
-  <path class="ln" d="M288 380 H800 M288 380 V450"/>
-  <g id="quay" class="ln thin" opacity=".55"></g>
-  <path class="ln thin" opacity=".5" d="M288 392 H800 M288 406 H800 M288 422 H800"/>
-
-  <!-- ACADEMY -->
-  <g id="school">
-    <!-- walls -->
-    <rect class="fl" x="330" y="168" width="360" height="212"/>
-    <path class="ln thin" d="M330 244 H690"/>
-    <!-- roof -->
-    <path class="fl" d="M308 172 L400 110 H620 L712 172 Z"/>
-    <g id="tiles" class="ln thin"></g>
-    <path class="ln" d="M400 110 H620"/>
-    <path class="fl" d="M296 176 H724 V168 H296 Z"/>
-    <!-- upper windows -->
-    <g id="uw"></g>
-    <!-- sign -->
-    <rect class="fl" x="438" y="248" width="144" height="34" rx="3"/>
-    <rect class="ln thin" x="442" y="252" width="136" height="26" rx="2"/>
-    <text x="510" y="268" text-anchor="middle" font-size="16" font-weight="800">고래 영어학원</text>
-    <text x="510" y="276" text-anchor="middle" font-size="6.5" letter-spacing="2.5">WHALE ENGLISH</text>
-    <!-- awning -->
-    <g id="awning"></g>
-    <!-- big window with blackboard -->
-    <rect class="fl" x="350" y="318" width="120" height="56"/>
-    <rect class="glow" x="352" y="320" width="116" height="52" fill="#ffcf6b" opacity="0"/>
-    <path class="ln thin" d="M410 318 V374"/>
-    <path class="fl" d="M344 374 H476 V380 H344 Z"/>
-    <g id="board" class="hit">
-      <rect class="fl" x="358" y="324" width="104" height="44"/>
-      <rect class="ln thin" x="361" y="327" width="98" height="38"/>
-      <text id="boardText" x="410" y="352" text-anchor="middle" font-size="20" font-weight="700">ABC</text>
-      <path class="ln thin" d="M370 360 H450"/>
+    <g id="bld"></g>
+    <!-- street -->
+    <rect x="16" y="360" width="768" height="90" fill="var(--street)"/>
+    <path class="l" d="M16 360 H784 M16 376 H784"/>
+    <path class="l" style="opacity:.5" d="M16 408 H70 M110 408 H170 M210 408 H270 M310 408 H370 M410 408 H470 M510 408 H570 M610 408 H670 M710 408 H784 M40 428 H120 M300 432 H400 M600 428 H700"/>
+    <g id="glows" filter="url(#blur)"></g>
+    <!-- street lamps -->
+    <g id="lamps"></g>
+    <g id="tree"></g>
+    <g id="people" class="people"></g>
+    <g id="vehicles" class="people"></g>
+    <g id="bubble">
+      <rect id="bb" class="plate o" x="-44" y="-22" width="88" height="22" rx="10"/>
+      <path class="plate o" d="M-5 0 L0 7 L5 0"/>
+      <text id="bt" y="-7"></text>
     </g>
-    <!-- plants -->
-    <g class="ln thin"><path d="M486 380 q-4 -16 2 -26 M492 380 q2 -18 10 -24 M498 380 q6 -10 4 -18"/></g>
-    <!-- door -->
-    <rect class="fl" x="530" y="318" width="60" height="62"/>
-    <rect class="glow" x="534" y="322" width="52" height="40" fill="#ffcf6b" opacity="0"/>
-    <rect class="ln thin" x="534" y="322" width="52" height="40"/>
-    <path class="ln thin" d="M560 322 V362 M534 342 H586"/>
-    <circle class="ink" cx="552" cy="350" r="2"/>
-    <!-- lantern -->
-    <g transform="translate(520 294)"><g id="lantern">
-      <path class="ln thin" d="M0 -4 V4"/>
-      <ellipse class="fl" cx="0" cy="12" rx="8" ry="10"/>
-      <ellipse class="glow" cx="0" cy="12" rx="6" ry="8" fill="#ffcf6b" opacity="0"/>
-      <path class="ln thin" d="M-6 6 H6 M-8 12 H8 M-6 18 H6"/>
-    </g></g>
-    <!-- right window -->
-    <rect class="fl" x="610" y="326" width="62" height="48"/>
-    <rect class="glow" x="612" y="328" width="58" height="44" fill="#ffcf6b" opacity="0"/>
-    <path class="ln thin" d="M641 326 V374 M610 350 H672"/>
-    <path class="fl" d="M604 374 H678 V380 H604 Z"/>
-  </g>
-
-  <!-- street lamp -->
-  <g id="lamp">
-    <path class="ln" d="M754 380 V262 Q754 250 742 250"/>
-    <path class="ln thin" d="M748 380 h12"/>
-    <path class="fl" d="M731 250 h22 l-3 -10 h-16 Z"/>
-    <rect class="fl" x="734" y="250" width="16" height="18" rx="3"/>
-    <circle class="glow2" cx="742" cy="260" r="46" fill="#ffcf6b" opacity="0"/>
-  </g>
-
-  <g id="people"></g>
-
-  <g id="bubble">
-    <rect id="bb" class="fl" x="-44" y="-24" width="88" height="26" rx="12"/>
-    <path class="fl" d="M-6 2 L0 10 L6 2"/>
-    <text id="bt" y="-6"></text>
+    <text id="label" x="34" y="42"></text>
   </g>
 </svg>
-<div id="hint">해를 끌어 시간을 바꿔 보세요 · 선생님, 아이들, 고래, 칠판을 눌러 보세요</div>
+<div id="ctl"><button id="pp" aria-label="재생/일시정지">⏸</button><input id="rng" type="range" min="0" max="24" step="0.01" value="9"><span id="hh"></span></div>
 
 <script>
 const $ = id => document.getElementById(id);
-const NS = 'http://www.w3.org/2000/svg';
 const svg = $('s');
-const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent||svg).appendChild(e); return e; };
+const rnd = (a, b) => a + Math.random()*(b-a);
+const GROUND = 360;
 
-/* ---------- static decoration ---------- */
-for (let i = 0; i < 12; i++) { const a = i*Math.PI/6;
-  mk('path', { class:'ln thin', d:`M${Math.cos(a)*21} ${Math.sin(a)*21} L${Math.cos(a)*30} ${Math.sin(a)*30}` }, $('rays')); }
-for (let i = 0; i < 34; i++) mk('circle', { cx:Math.random()*800, cy:Math.random()*230, r:.7+Math.random()*1.3, fill:'#fff' }, $('stars'));
-
-// roof tiles: rows + staggered ticks
-for (let y = 116, r = 0; y < 170; y += 6, r++) {
-  const xl = 400 - (y-110)*1.5, xr = 620 + (y-110)*1.5;
-  mk('path', { d:`M${xl} ${y} H${xr}` }, $('tiles'));
-  for (let x = xl + 8 + (r%2)*7; x < xr - 4; x += 14) mk('path', { d:`M${x} ${y} v6`, opacity:.7 }, $('tiles'));
+/* ================= BUILDINGS ================= */
+let B = '', GL = '';
+const win = (x, y, w, h, lit = Math.random() < .55) => {
+  if (lit) GL += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f3bd6e"/>`;
+  return `<rect class="${lit?'wl':'wo'} o" x="${x}" y="${y}" width="${w}" height="${h}"/>
+          <path class="l" d="M${x+w/2} ${y}V${y+h}M${x} ${y+h*.45}H${x+w}"/><path class="o plate" d="M${x-2} ${y+h}h${w+4}v3h-${w+4}z"/>`;
+};
+const sign = (x, y, w, h, text, size, icon) => `<rect class="plate o" x="${x}" y="${y}" width="${w}" height="${h}"/>` +
+  (icon ? `<use href="#wh" x="${x+4}" y="${y+h/2-4.5}" width="16" height="8"/>` : '') +
+  `<text class="sgt" x="${x + w/2 + (icon?9:0)}" y="${y + h/2 + size*.36}" font-size="${size}">${text}</text>`;
+function gable(xl, xr, top, bot, slant, cls) {
+  let s = `<path class="${cls} o" d="M${xl} ${bot} L${xl+slant} ${top} H${xr-slant} L${xr} ${bot} Z"/>`;
+  for (let y = top + 5; y < bot; y += 5) { const k = (y-top)/(bot-top); s += `<path class="l" style="opacity:.3" d="M${xl+slant*(1-k)+2} ${y} H${xr-slant*(1-k)-2}"/>`; }
+  return s;
 }
-// quay stones
-for (let y = 392, r = 0; y < 450; y += 14, r++) for (let x = 288 + (r%2)*16; x < 800; x += 32) mk('path', { d:`M${x} ${y} v14` }, $('quay'));
-// sea surface + waves
-let d = 'M0 396'; for (let x = 0; x < 288; x += 24) d += ` q6 -5 12 0 t12 0`; $('seaTop').setAttribute('d', d);
-for (let r = 0; r < 3; r++) {
-  const g = mk('g', { class:'wave', style:`animation-delay:${-r*1.7}s` }, $('waves'));
-  for (let x = -10 + (r%2)*14; x < 300; x += 40) mk('path', { d:`M${x} ${412+r*14} q5 -4 10 0 t10 0 t10 0` }, g);
-}
-// upper windows (kids peeking)
-const kidHeads = [];
-[[352,1],[430,0],[524,0],[602,1]].forEach(([x, kid], i) => {
-  mk('rect', { class:'fl', x, y:186, width:50, height:46 }, $('uw'));
-  mk('rect', { class:'glow', x:x+2, y:188, width:46, height:42, fill:'#ffcf6b', opacity:0 }, $('uw'));
-  mk('path', { class:'ln thin', d:`M${x+25} 186 V232 M${x} 209 H${x+50}` }, $('uw'));
-  mk('path', { class:'fl', d:`M${x-4} 232 H${x+54} V238 H${x-4} Z` }, $('uw'));
-  if (kid) {
-    const g = mk('g', {}, $('uw'));
-    mk('path', { class:'fl', d:`M${x+8} 232 Q${x+9} 218 ${x+25} 218 Q${x+41} 218 ${x+42} 232 Z` }, g);
-    mk('circle', { class:'fl', cx:x+25, cy:210, r:8 }, g);
-    mk('path', { class:'ink', d:`M${x+17} 209 Q${x+17} 200 ${x+25} 201 Q${x+33} 200 ${x+33} 209 Q${x+27} 205 ${x+17} 209 Z` }, g);
-    mk('rect', { x:x+2, y:188, width:46, height:44, fill:'transparent' }, g);
-    kidHeads.push({ g, ph: i });
-    g.classList.add('hit');
-    g.addEventListener('click', () => say(i ? 'Good morning!' : 'I like whales!', x+25, 182));
-  } else {
-    mk('path', { class:'ln thin', d:`M${x+4} 190 q4 14 0 38 M${x+46} 190 q-4 14 0 38` }, $('uw'));
-  }
-});
-// awning
-{ const g = $('awning'); let dd = 'M336 290 H684 L694 316'; for (let x = 694; x > 326; x -= 28) dd += ` q-14 10 -28 0`; dd += ' Z';
-  mk('path', { class:'fl', d:dd }, g);
-  for (let x = 336, i = 0; x < 672; x += 28, i++) {
-    const o = (x-336)/348*10, o2 = (x+28-336)/348*10;
-    if (i%2===0) mk('path', { class:'tint', d:`M${x} 290 H${x+28} L${x+28+o2} 316 q-14 10 -28 0 Z` }, g);
-    mk('path', { class:'ln thin', d:`M${x} 290 L${x+o} 316` }, g); } }
+const board = (x, y, w, h, t) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="var(--roofB)" class="o"/><text class="sgt" x="${x+w/2}" y="${y+h/2+3}" font-size="8" style="fill:#f3efe4;font-weight:600">${t}</text>`;
+const books = (x, y, w) => { let s = '', cols = ['#a5483c','#3f6a73','#c79a3b','#5d5a86','#7a4a3a']; for (let i = 0; i < w; i += 5) { const h = 9 + (i*7)%6; s += `<rect x="${x+i}" y="${y-h}" width="4" height="${h}" fill="${cols[(i/5)%5|0]}" stroke="var(--ink)" stroke-width=".5"/>`; } return s + `<path class="l" d="M${x-1} ${y} h${w+2}"/>`; };
 
-/* ---------- people ---------- */
+// ---- A: beginner house (brown roof, dormer)
+B += `<rect class="wall o" x="24" y="208" width="150" height="152"/>`;
+B += gable(16, 182, 176, 208, 28, 'rA');
+B += `<rect class="wall o" x="88" y="164" width="34" height="26"/><path class="rA o" d="M84 166 L105 148 L126 166 Z"/>` + win(98, 168, 14, 18);
+B += win(40, 220, 40, 28) + win(112, 220, 40, 28) + win(40, 258, 40, 28) + win(112, 258, 40, 28);
+B += sign(34, 294, 130, 16, 'BEGINNER · 초급반', 8.5, true);
+B += `<rect class="wl o" x="34" y="318" width="78" height="40"/>` + board(42, 324, 34, 20, 'A B C') + `<path class="l" d="M44 354 h60 M82 332 q10 -8 18 0 v14 h-18 z"/>`;
+B += `<rect class="plate o" x="122" y="320" width="30" height="40"/><path class="l" d="M137 320 V360 M122 336 H152"/><circle class="ink" cx="132" cy="342" r="1.6"/>`;
+
+// ---- B: main academy (tallest, clock tower)
+B += `<rect class="wall o" x="180" y="120" width="196" height="240"/><rect class="rC o" x="174" y="110" width="208" height="10"/>`;
+B += `<rect class="wall o" x="262" y="78" width="40" height="32"/><path class="rB o" d="M258 78 L282 60 L306 78 Z"/>`;
+B += `<circle class="plate o" cx="282" cy="94" r="10"/><path class="l" d="M282 94 V88 M282 94 L287 97"/><path class="l" d="M282 60 V52"/>`;
+B += `<g id="vane" class="hit"><rect x="268" y="40" width="28" height="16" fill="transparent"/><use href="#wh" x="270" y="42" width="24" height="12"/></g>`;
+B += sign(196, 126, 164, 20, '고래 영어학원', 13);
+[152, 190, 228].forEach(y => [198, 256, 314].forEach(x => B += win(x, y, 46, 30)));
+B += sign(226, 264, 124, 14, 'WHALE ENGLISH ACADEMY', 6.8);
+B += `<rect class="wl o" x="192" y="284" width="58" height="72"/>` + board(198, 290, 46, 26, 'Hello!') + `<path class="l" d="M200 346 h42 M206 346 v-14 h30 v14"/>`;
+B += `<path class="wl o" d="M258 360 V314 Q258 292 278 292 Q298 292 298 314 V360 Z"/><path class="l" d="M278 292 V360 M258 330 H298"/><circle class="ink" cx="274" cy="336" r="1.4"/><circle class="ink" cx="282" cy="336" r="1.4"/>`;
+B += `<rect class="wl o" x="308" y="284" width="56" height="72"/>` + books(314, 312, 44) + books(314, 334, 44) + books(314, 352, 44);
+B += `<path class="l" d="M376 300 h6"/><circle class="plate o" cx="388" cy="300" r="9"/><use href="#wh" x="381" y="296" width="14" height="7"/>`;
+
+// ---- C: speaking cafe (teal roof, awning)
+B += `<rect class="wall o" x="382" y="190" width="150" height="170"/>`;
+B += gable(376, 538, 160, 190, 26, 'rB');
+B += win(398, 202, 44, 32) + win(472, 202, 44, 32) + win(398, 246, 44, 32) + win(472, 246, 44, 32);
+B += sign(394, 286, 124, 15, 'SPEAKING · CAFÉ', 8);
+B += `<rect class="wl o" x="392" y="324" width="92" height="34"/><path class="l" d="M412 324 V334 M412 334 a6 4 0 0 0 12 0 M450 324 V332 M444 332 h12 l-3 6 h-6 z"/>` + `<path class="o plate" d="M394 352 h86"/><rect x="460" y="344" width="6" height="8" fill="#c79a3b" class="o"/><rect x="470" y="346" width="6" height="6" fill="#a5483c" class="o"/>`;
+for (let i = 0; i < 7; i++) B += `<path class="o ${i%2?'plate':'rB'}" d="M${388+i*14.5} 306 h14.5 l${1+i*0.3-0.3} 14 h-14.5 z"/>`;
+B += `<rect class="plate o" x="492" y="320" width="32" height="40"/><path class="l" d="M508 320 V360 M492 338 H524"/><circle class="ink" cx="503" cy="342" r="1.6"/>`;
+
+// ---- D: library (modern, glass)
+B += `<rect class="wall o" x="536" y="140" width="140" height="220"/><rect class="rC o" x="530" y="132" width="152" height="8"/><rect class="rC o" x="600" y="122" width="22" height="10"/><path class="l" d="M606 122 v-6 M616 122 v-9"/>`;
+[150, 182].forEach(y => { B += `<rect class="wo o" x="548" y="${y}" width="116" height="26"/><path class="l" d="M577 ${y} v26 M606 ${y} v26 M635 ${y} v26"/>`; GL += `<rect x="550" y="${y+2}" width="112" height="22" fill="#9fd6e8" opacity=".5"/>`; });
+B += sign(552, 216, 108, 16, 'LIBRARY · 도서관', 8.5, true) + sign(566, 238, 80, 12, 'OPEN 24H', 6.5);
+B += `<rect class="wo o" x="548" y="266" width="38" height="94"/><rect class="wl o" x="590" y="266" width="38" height="94"/><rect class="wo o" x="632" y="266" width="32" height="94"/>`;
+B += books(552, 300, 28) + books(552, 330, 28) + books(636, 300, 24) + books(636, 330, 24) + `<path class="l" d="M609 266 V360 M590 300 H628"/>`;
+
+// ---- E: study room (brown roof)
+B += `<rect class="wall o" x="682" y="214" width="98" height="146"/>`;
+B += gable(674, 790, 176, 214, 22, 'rA');
+B += win(696, 228, 32, 30) + win(740, 228, 32, 30);
+B += sign(692, 274, 82, 14, 'STUDY · 자습실', 7.5);
+B += `<rect class="wl o" x="692" y="296" width="46" height="62"/>` + books(698, 322, 34) + books(698, 348, 34) + `<path class="l" d="M744 300 q0 -4 4 -4 h20 q4 0 4 4"/>`;
+B += `<rect class="plate o" x="746" y="300" width="28" height="60"/><path class="l" d="M760 300 V360"/>`;
+// small roof birds
+B += [[60,172],[250,108],[444,158],[610,120],[720,174]].map(([x,y]) => `<path class="l" d="M${x} ${y} q2 -4 4 0 q2 -4 4 0"/>`).join('');
+$('bld').innerHTML = B;
+$('glows').innerHTML = GL;
+
+// street lamps
+$('lamps').innerHTML = [378, 534, 674].map(x => `<path class="l" d="M${x} 360 V274 q0 -10 -8 -10"/><rect class="wl o" x="${x-14}" y="262" width="12" height="16" rx="2"/><circle class="lg" cx="${x-8}" cy="270" r="16" fill="#f3bd6e" opacity="0"/>`).join('');
+// tree at right edge
+$('tree').innerHTML = `<path class="l" d="M780 360 V300"/><circle class="plate o" cx="812" cy="268" r="30"/><path class="l" d="M786 268 q4 -6 10 -2"/>`;
+// stars
+$('stars').innerHTML = Array.from({length:44}, () => `<circle cx="${rnd(24,780)}" cy="${rnd(24,150)}" r="${rnd(.6,1.4)}" fill="#fff"/>`).join('');
+
+/* ================= PALETTE / TIME ================= */
+const K = [
+ { h:0,    bg:'#181d38', wall:'#232843', plate:'#2c3252', ink:'#dfe3f2', roofA:'#33292f', roofB:'#243040', roofC:'#2f3445', street:'#1f2440', winOff:'#1c2038', winLit:'#f3bd6e', bus:'#8a6c24', bri:.62, n:1 },
+ { h:5,    bg:'#1c2140', wall:'#262b46', plate:'#2f3555', ink:'#dfe3f2', roofA:'#352b32', roofB:'#26334a', roofC:'#313748', street:'#22274a', winOff:'#1f233c', winLit:'#f3bd6e', bus:'#8f7227', bri:.65, n:1 },
+ { h:6.6,  bg:'#e9cdb4', wall:'#efdcc6', plate:'#f5e8d6', ink:'#2b2724', roofA:'#6d4034', roofB:'#3b5557', roofC:'#5a5f66', street:'#e6d1b8', winOff:'#e8d6bf', winLit:'#f5d79c', bus:'#d8a82e', bri:.94, n:.25 },
+ { h:8.6,  bg:'#f3eee3', wall:'#f7f2e7', plate:'#fbf8ef', ink:'#2b2724', roofA:'#7a4a3a', roofB:'#3f5f60', roofC:'#5c6670', street:'#efe6d6', winOff:'#efe9dc', winLit:'#f3ecd9', bus:'#e0b030', bri:1, n:0 },
+ { h:16,   bg:'#f3eee3', wall:'#f7f2e7', plate:'#fbf8ef', ink:'#2b2724', roofA:'#7a4a3a', roofB:'#3f5f60', roofC:'#5c6670', street:'#efe6d6', winOff:'#efe9dc', winLit:'#f3ecd9', bus:'#e0b030', bri:1, n:0 },
+ { h:17.8, bg:'#e8c5a2', wall:'#f2dec4', plate:'#f7e9d3', ink:'#2b2724', roofA:'#6d4034', roofB:'#3b5557', roofC:'#5a5f66', street:'#ecd1b2', winOff:'#ecd5b9', winLit:'#f7d9a0', bus:'#d9a82e', bri:.96, n:.15 },
+ { h:19.2, bg:'#3d3b63', wall:'#554d6c', plate:'#645b7a', ink:'#e4def0', roofA:'#4a3340', roofB:'#34475a', roofC:'#454a5e', street:'#34355a', winOff:'#3a3858', winLit:'#f6c77d', bus:'#b58c28', bri:.8, n:.75 },
+ { h:20.8, bg:'#181d38', wall:'#232843', plate:'#2c3252', ink:'#dfe3f2', roofA:'#33292f', roofB:'#243040', roofC:'#2f3445', street:'#1f2440', winOff:'#1c2038', winLit:'#f3bd6e', bus:'#8a6c24', bri:.62, n:1 },
+ { h:24,   bg:'#181d38', wall:'#232843', plate:'#2c3252', ink:'#dfe3f2', roofA:'#33292f', roofB:'#243040', roofC:'#2f3445', street:'#1f2440', winOff:'#1c2038', winLit:'#f3bd6e', bus:'#8a6c24', bri:.62, n:1 },
+];
+const hexRGB = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+const lerp = (a,b,k) => a + (b-a)*k;
+const mixHex = (a,b,k) => 'rgb(' + hexRGB(a).map((v,i) => Math.round(lerp(v, hexRGB(b)[i], k))).join(',') + ')';
+const NAMES = ['bg','wall','plate','ink','roofA','roofB','roofC','street','winOff','winLit','bus'];
+let hour = 9.2, playing = true, night = 0;
+function applyTime(h) {
+  let i = 0; while (i < K.length-2 && h > K[i+1].h) i++;
+  const a = K[i], b = K[i+1], k0 = Math.min(1, Math.max(0, (h-a.h)/(b.h-a.h))), k = k0*k0*(3-2*k0);
+  const r = document.documentElement.style;
+  NAMES.forEach(n => r.setProperty('--'+n, mixHex(a[n], b[n], k)));
+  r.setProperty('--bri', lerp(a.bri, b.bri, k));
+  night = lerp(a.n, b.n, k);
+  $('stars').setAttribute('opacity', Math.max(0, night - .25));
+  $('glows').setAttribute('opacity', night * .55);
+  document.querySelectorAll('.lg').forEach(e => e.setAttribute('opacity', night*.35));
+  // sun / moon
+  let sm = '';
+  if (h >= 6 && h < 18) { const p = (h-6)/12; sm = `<g transform="translate(${40+720*p} ${64 - Math.sin(Math.PI*p)*38})"><circle r="11" fill="#f0c75e" stroke="var(--ink)" stroke-width="1"/></g>`; }
+  else { const p = h >= 18 ? (h-18)/12 : (h+6)/12; sm = `<g transform="translate(${40+720*p} ${64 - Math.sin(Math.PI*p)*38})"><circle r="10" fill="#f1ecd9"/><circle cx="4" cy="-2" r="9" fill="var(--bg)"/></g>`; }
+  $('sunmoon').innerHTML = sm;
+  const hh = Math.floor(h) % 24, mm = Math.floor((h%1)*60);
+  const period = h < 5 ? '새벽' : h < 11 ? '아침' : h < 16 ? '낮' : h < 18.5 ? '오후' : h < 21 ? '저녁' : '밤';
+  $('label').textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')} · ${period}`;
+  $('rng').value = h; $('hh').textContent = '';
+}
+
+/* ================= PEOPLE ================= */
 const people = [];
-function person({ sc, hair, coat, glasses, books, pack, off }) {
-  const root = mk('g', { class:'hit' }, $('people'));
-  const f = mk('g', {}, root);
-  const longCoat = coat === 'long';
-  f.innerHTML = `
-    <path class="ln" id="la"/><path class="ln" id="lb"/>
-    ${pack ? '<rect class="fl" x="-13" y="-50" width="8" height="18" rx="2"/>' : ''}
-    <path class="fl" d="${longCoat ? 'M-10 -16 L-7 -50 Q0 -54 7 -50 L10 -16 Z' : 'M-8 -26 L-7 -50 Q0 -54 7 -50 L8 -26 Z'}"/>
-    ${longCoat ? '<path class="ln thin" d="M0 -48 V-16"/>' : ''}
-    <path class="ln" id="armB"/>
-    <circle class="fl" cx="0" cy="-59" r="7.5"/>
-    ${hair === 'bun' ? '<circle class="ink" cx="-5" cy="-68" r="3.6"/><path class="ink" d="M-8 -60 Q-9 -69 0 -68 Q8 -69 8 -60 Q4 -64 -8 -60 Z"/>' :
-                       '<path class="ink" d="M-8 -59 Q-9 -69 0 -68 Q9 -69 8 -59 Q3 -63 -8 -59 Z"/>'}
-    <circle class="ink" cx="3.5" cy="-58" r="1.1"/>
-    ${glasses ? '<circle class="ln thin" cx="3.5" cy="-58" r="3"/><path class="ln thin" d="M0.5 -58 H-6"/>' : ''}
-    <path class="ln" d="M2 -49 L${books ? 12 : 9} ${books ? -38 : -30}"/>
-    ${books ? '<g transform="translate(12 -38)"><rect class="fl" x="-3" y="-5" width="22" height="5"/><rect class="fl" x="-1" y="-10" width="19" height="5"/><rect class="fl" x="-2" y="-15" width="20" height="5"/></g>' : ''}
-  `;
-  const p = { root, f, sc, off, la: f.querySelector('#la'), lb: f.querySelector('#lb'), armB: f.querySelector('#armB'), hop: 0, books };
-  la_ids: { p.la.removeAttribute('id'); p.lb.removeAttribute('id'); p.armB.removeAttribute('id'); }
+const SK = '#f2e2cc';
+function mkPerson(o) {
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'hit');
+  const long = o.long, c = o.coat;
+  g.innerHTML = `<g class="f">
+    <rect x="-14" y="-76" width="28" height="78" fill="transparent"/>
+    <path class="o la" fill="none"/><path class="o lb" fill="none"/>
+    ${o.pack ? `<rect class="o" x="-13" y="-52" width="8" height="18" rx="2" style="fill:#7d6a55"/>` : ''}
+    <path class="o" style="fill:${c}" d="${long ? 'M-10 -14 L-7 -52 Q0 -56 7 -52 L10 -14 Z' : 'M-8 -28 L-7 -52 Q0 -56 7 -52 L8 -28 Z'}"/>
+    <path class="o ab" fill="none"/>
+    <circle class="o" cx="0" cy="-62" r="7" style="fill:${SK}"/>
+    <path style="fill:${o.hair||'#2a2622'}" d="M-7.5 -62 Q-8 -71 0 -70.5 Q8 -71 7.5 -62 Q3 -66 -7.5 -62 Z"/>
+    ${o.bun ? '<circle cx="-6" cy="-70" r="3.4" style="fill:#2a2622"/>' : ''}
+    ${o.glasses ? '<circle class="o" cx="3.5" cy="-61" r="2.8" fill="none"/>' : ''}
+    <path class="o af" fill="none"/>
+    ${o.bag ? `<rect class="o" x="6" y="-36" width="10" height="9" rx="1.5" style="fill:#8a5a3a"/>` : ''}
+    ${o.books ? `<g transform="translate(9 -38)"><rect class="o" x="0" y="-5" width="13" height="4" fill="#a5483c"/><rect class="o" x="1" y="-9" width="11" height="4" fill="#3f6a73"/></g>` : ''}
+  </g>`;
+  $('people').appendChild(g);
+  const p = Object.assign({ g, f: g.querySelector('.f'), la: g.querySelector('.la'), lb: g.querySelector('.lb'), ab: g.querySelector('.ab'), af: g.querySelector('.af'),
+    x: rnd(60, 740), dir: Math.random() < .5 ? 1 : -1, v: rnd(14, 24), ph: rnd(0, 6), pause: 0, hop: 0, y: 372 }, o);
+  g.addEventListener('click', () => { p.hop = 1; p.pause = 1.2; say(p.say, p.x, p.y - 74*p.sc - 6); });
   people.push(p); return p;
 }
-const teacher = person({ sc:1.3, hair:'bun',   coat:'long',  glasses:true, books:true, off:0 });
-const kid1    = person({ sc:.92, hair:'short', coat:'short', pack:true,    off:44 });
-const kid2    = person({ sc:.84, hair:'bun',   coat:'short', pack:true,    off:80 });
+mkPerson({ sc:.62, coat:'#2f4a7a', long:true, glasses:true, bun:true, books:true, say:'Good morning, class!', x:200, v:17 });
+mkPerson({ sc:.44, coat:'#c79a3b', pack:true, hair:'#4a3020', say:'Hi, teacher!', x:170, v:17 });
+mkPerson({ sc:.40, coat:'#8a3b3b', pack:true, bun:true, say:'Look, a whale!', x:140, v:17 });
+mkPerson({ sc:.58, coat:'#2f6a68', bag:true, say:'See you tomorrow!', x:470, v:20 });
+mkPerson({ sc:.58, coat:'#7a4a3a', bag:true, glasses:true, say:'Nice weather!', x:600, v:15 });
+mkPerson({ sc:.56, coat:'#8a8a93', long:true, hair:'#d8d8d8', say:'English is fun!', x:350, v:13 });
+mkPerson({ sc:.56, coat:'#3a3f6a', say:'Library, please!', x:640, v:22 });
+mkPerson({ sc:.42, coat:'#4a7a5a', pack:true, say:"I'm a student!", x:520, v:18 });
 
-let bx = 360, dir = 1, pause = 0, phase = 0, last = performance.now();
-const LEFT = 320, RIGHT = 700;
-const sx = (p) => bx - dir * p.off;
-
-function render(p, ph, moving) {
-  const s = moving ? Math.sin(ph) : 0, c = moving ? Math.cos(ph) : 0;
-  const foot = (k, sg) => `M0 -26 L${sg*k*13} ${-1 - Math.max(0, -sg*c)*3}`;
-  p.la.setAttribute('d', foot(s,  1)); p.lb.setAttribute('d', foot(s, -1));
-  p.armB.setAttribute('d', `M-2 -49 L${-s*7 - 1} -31`);
-  const bob = moving ? Math.abs(Math.sin(ph))*1.6 : 0;
-  const hop = p.hop > 0 ? Math.sin(p.hop*Math.PI)*12 : 0;
-  p.root.setAttribute('transform', `translate(${sx(p)} ${380 - bob - hop}) scale(${p.sc})`);
-  p.f.setAttribute('transform', `scale(${dir} 1)`);
+function renderPerson(p, moving) {
+  const s = moving ? Math.sin(p.ph) : 0, c = moving ? Math.cos(p.ph) : 0;
+  const foot = (sg) => `M${sg>0?1:-1} -28 L${sg*s*12} ${-1 - Math.max(0, -sg*c)*3}`;
+  p.la.setAttribute('d', foot(1)); p.lb.setAttribute('d', foot(-1));
+  p.ab.setAttribute('d', `M-1 -50 L${-s*6 - 2} -34`);
+  p.af.setAttribute('d', p.books || p.bag ? 'M2 -50 L9 -38' : `M2 -50 L${s*6 + 3} -34`);
+  const hop = p.hop > 0 ? Math.sin(p.hop*Math.PI)*8 : 0;
+  p.g.setAttribute('transform', `translate(${p.x} ${p.y - hop}) scale(${p.sc})`);
+  p.f.setAttribute('transform', `scale(${p.dir} 1)`);
 }
 
-/* ---------- time of day ---------- */
-let t = 0.3;
-const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i]-v)*k));
-const DAY_P=[244,239,230], NIGHT_P=[18,24,46], DAY_I=[42,38,34], NIGHT_I=[226,229,241];
-let night = 0;
-function setTime(v) {
-  t = Math.min(1, Math.max(0, v));
-  const light = Math.sin(Math.PI*t);
-  night = Math.min(1, Math.max(0, (0.45 - light)/0.35));
-  const r = document.documentElement.style;
-  r.setProperty('--paper', `rgb(${mix(DAY_P, NIGHT_P, night)})`);
-  r.setProperty('--ink',   `rgb(${mix(DAY_I, NIGHT_I, night)})`);
-  const x = 40 + 720*t, u = 1-t, y = u*u*230 + 2*u*t*(-80) + t*t*230;
-  $('sun').setAttribute('transform', `translate(${x} ${y})`);
-  $('rays').style.opacity = 1 - night;
-  $('sunDisc').style.fill = night > .5 ? 'var(--ink)' : 'var(--paper)';
-  $('sunDisc').setAttribute('r', night > .5 ? 12 : 16);
-  $('stars').setAttribute('opacity', night*.9);
-  document.querySelectorAll('.glow').forEach(e => e.setAttribute('opacity', night*.8));
-  document.querySelectorAll('.glow2').forEach(e => e.setAttribute('opacity', night*.3));
-}
-let dragging = false;
-$('sun').addEventListener('pointerdown', e => { dragging = true; e.preventDefault(); });
-window.addEventListener('pointermove', e => { if (!dragging) return;
-  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
-  setTime((p.matrixTransform(svg.getScreenCTM().inverse()).x - 40)/720); });
-window.addEventListener('pointerup', () => dragging = false);
+/* ---- bike, dog, bus ---- */
+const V = $('vehicles'); const NSV = 'http://www.w3.org/2000/svg';
+const bike = document.createElementNS(NSV, 'g'); bike.setAttribute('class', 'hit');
+bike.innerHTML = `<g class="f"><rect x="-22" y="-52" width="46" height="54" fill="transparent"/>
+  <g class="w1"><circle class="o" cx="-14" cy="-9" r="9" fill="none"/><path class="l sp" d="M-14 -18 V0 M-23 -9 H-5"/></g>
+  <g class="w2"><circle class="o" cx="14" cy="-9" r="9" fill="none"/><path class="l sp" d="M14 -18 V0 M5 -9 H23"/></g>
+  <path class="o" fill="none" d="M-14 -9 L-4 -19 H9 L14 -9 M-4 -19 L0 -9 H-14 M9 -19 L7 -24"/>
+  <path class="o" d="M-6 -22 L-3 -36 Q2 -40 6 -36 L4 -24 Z" style="fill:#3a5a8a"/><circle class="o" cx="3" cy="-44" r="6" style="fill:${SK}"/>
+  <path d="M-3 -44 Q-3 -51 3 -50 Q9 -50 8 -44 Q4 -47 -3 -44 Z" style="fill:#2a2622"/><path class="o" fill="none" d="M4 -34 L12 -26"/></g>`;
+V.appendChild(bike);
+const bk = { g: bike, x: 120, dir: 1, v: 38, sc: .55, y: 394, ph: 0, w1: bike.querySelector('.w1'), w2: bike.querySelector('.w2'), f: bike.querySelector('.f') };
+bike.addEventListener('click', () => say('Ring ring!', bk.x, bk.y - 52));
 
-/* ---------- bubble ---------- */
+const dog = document.createElementNS(NSV, 'g'); dog.setAttribute('class', 'hit');
+dog.innerHTML = `<g class="f"><rect x="-16" y="-24" width="34" height="26" fill="transparent"/>
+  <path class="o la" fill="none"/><path class="o lb" fill="none"/>
+  <ellipse class="o" cx="0" cy="-13" rx="12" ry="6" style="fill:#c79a6b"/><circle class="o" cx="13" cy="-18" r="5" style="fill:#c79a6b"/>
+  <path class="o" style="fill:#7a4a3a" d="M16 -22 l3 -4 l1 5 z"/><circle cx="15" cy="-19" r="1" class="ink"/>
+  <path class="o tl" fill="none"/>
+  <path class="o lc" fill="none"/><path class="o ld" fill="none"/></g>`;
+V.appendChild(dog);
+const dg = { g: dog, x: 440, dir: -1, v: 16, sc: .8, y: 373, ph: 0, f: dog.querySelector('.f'), la: dog.querySelector('.la'), lb: dog.querySelector('.lb'), lc: dog.querySelector('.lc'), ld: dog.querySelector('.ld'), tl: dog.querySelector('.tl') };
+dog.addEventListener('click', () => say('멍!  Woof!', dg.x, dg.y - 34));
+
+const bus = document.createElementNS(NSV, 'g'); bus.setAttribute('class', 'hit');
+bus.innerHTML = `<polygon class="hl" points="36,-12 110,-2 110,-22" fill="#f6e9a8" opacity="0"/>
+  <rect class="o" x="-36" y="-28" width="72" height="24" rx="4" style="fill:var(--bus)"/>
+  ${[-30,-19,-8,3].map(x => `<rect class="o" x="${x}" y="-25" width="8" height="8" style="fill:var(--winLit)"/>`).join('')}
+  <rect class="o" x="15" y="-25" width="15" height="14" style="fill:var(--winLit)"/><path class="l" d="M-36 -13 H36"/>
+  <circle class="o" cx="-20" cy="-4" r="5.5" fill="#2a2622"/><circle class="o" cx="20" cy="-4" r="5.5" fill="#2a2622"/>
+  <use href="#wh" x="-30" y="-17" width="20" height="9"/>`;
+V.appendChild(bus);
+const bs = { g: bus, x: -90, v: 52, y: 424, sc: .9, honk: 0 };
+bus.addEventListener('click', () => say('Beep beep! 🚌', bs.x, bs.y - 36));
+
+/* ================= BUBBLE ================= */
 let bt;
 function say(text, x, y) {
   $('bt').textContent = text;
-  const w = Math.max(70, text.length*8.5 + 26);
+  const w = Math.max(60, text.length*6.2 + 22);
   $('bb').setAttribute('x', -w/2); $('bb').setAttribute('width', w);
-  $('bubble').setAttribute('transform', `translate(${Math.min(770, Math.max(50, x))} ${y})`);
+  $('bubble').setAttribute('transform', `translate(${Math.min(760, Math.max(60, x))} ${Math.max(40, y)})`);
   $('bubble').style.opacity = 1; clearTimeout(bt); bt = setTimeout(() => $('bubble').style.opacity = 0, 1700);
 }
+$('vane').addEventListener('click', () => say('뿌우~ Welcome!', 282, 40));
 
-/* ---------- main loop ---------- */
+/* ================= LOOP ================= */
+let last = performance.now();
+function step(o, dt, lo, hi) { o.x += o.dir*o.v*dt; if (o.x > hi || o.x < lo) { o.dir *= -1; o.x = Math.min(hi, Math.max(lo, o.x)); } }
 function frame(now) {
-  const dt = Math.min(50, now-last)/1000; last = now;
-  const moving = pause <= 0;
-  if (moving) {
-    bx += dir*42*dt; phase += dt*7;
-    if (bx > RIGHT || bx < LEFT) { dir *= -1; bx = Math.min(RIGHT, Math.max(LEFT, bx)); pause = .9; }
-  } else pause -= dt;
-  people.forEach((p, i) => { p.hop = Math.max(0, p.hop - dt*2.6); render(p, phase - i*.9, moving && p.hop === 0 || moving); });
-  const k = now/1000;
-  $('whale').setAttribute('transform', `translate(140 ${372 + Math.sin(k*.9)*5}) rotate(${Math.sin(k*.9+1)*1.6}) scale(.9)`);
-  kidHeads.forEach(h => h.g.setAttribute('transform', `translate(0 ${Math.sin(k*1.6 + h.ph*2)*1.8})`));
+  const dt = Math.min(50, now - last)/1000; last = now;
+  if (playing) { hour = (hour + dt*0.25) % 24; applyTime(hour); }   // 1 hour = 4s
+  people.forEach(p => {
+    p.hop = Math.max(0, p.hop - dt*2.4);
+    const moving = p.pause <= 0;
+    if (moving) { step(p, dt, 36, 760); p.ph += dt*p.v*.42; if (Math.random() < dt*.04) p.pause = rnd(.8, 2.4); }
+    else p.pause -= dt;
+    renderPerson(p, moving);
+  });
+  // bike
+  step(bk, dt, 40, 760); bk.ph += dt*bk.v*.3;
+  bk.g.setAttribute('transform', `translate(${bk.x} ${bk.y}) scale(${bk.sc})`); bk.f.setAttribute('transform', `scale(${bk.dir} 1)`);
+  [bk.w1, bk.w2].forEach((w, i) => w.setAttribute('transform', `rotate(${bk.ph*57*bk.dir} ${i ? 14 : -14} -9)`));
+  // dog
+  step(dg, dt, 40, 760); dg.ph += dt*dg.v*.5;
+  const s = Math.sin(dg.ph);
+  dg.la.setAttribute('d', `M-8 -10 L${-8+s*5} 0`); dg.lb.setAttribute('d', `M-4 -10 L${-4-s*5} 0`);
+  dg.lc.setAttribute('d', `M6 -10 L${6-s*5} 0`); dg.ld.setAttribute('d', `M9 -10 L${9+s*5} 0`);
+  dg.tl.setAttribute('d', `M-11 -15 q-5 -5 ${-6+Math.sin(dg.ph*3)*2} -9`);
+  dg.g.setAttribute('transform', `translate(${dg.x} ${dg.y}) scale(${dg.sc})`); dg.f.setAttribute('transform', `scale(${dg.dir} 1)`);
+  // bus
+  bs.x += bs.v*dt; if (bs.x > 900) bs.x = -90;
+  bs.g.setAttribute('transform', `translate(${bs.x} ${bs.y}) scale(${bs.sc})`);
+  bs.g.querySelector('.hl').setAttribute('opacity', night*.55);
   requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
+applyTime(hour); requestAnimationFrame(frame);
 
-/* ---------- interactions ---------- */
-function click(p, text) { p.root.addEventListener('click', () => { p.hop = 1; if (p === teacher) pause = 1.3; say(text, sx(p), 380 - 80*p.sc - 20); }); }
-click(teacher, 'Hello, class!'); click(kid1, 'Hi, teacher!'); click(kid2, "I'm a whale!");
-$('whale').addEventListener('click', () => {
-  const sp = document.querySelector('#whale .spout'); sp.classList.remove('burst'); void sp.getBBox(); sp.classList.add('burst');
-  setTimeout(() => sp.classList.remove('burst'), 2200); say('뿌우~ Welcome!', 130, 270);
-});
-const words = ['ABC','Apple','Whale','Hello!','Study','Friend']; let wi = 0;
-$('board').addEventListener('click', () => { wi = (wi+1) % words.length; $('boardText').textContent = words[wi]; say('Repeat after me!', 410, 312); });
-
-setTime(t);
+$('pp').addEventListener('click', () => { playing = !playing; $('pp').textContent = playing ? '⏸' : '▶'; });
+$('rng').addEventListener('input', e => { hour = parseFloat(e.target.value); applyTime(hour); });
+window.setHour = h => { hour = h; applyTime(h); };
 </script>
 </body>
 </html>
