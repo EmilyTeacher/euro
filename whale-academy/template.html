@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>고래영어학원의 하루</title>
+<style>
+  html,body { margin:0; background:#ebe8e2; }
+  body { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+         font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; -webkit-text-size-adjust:100%; }
+  #stage { position:relative; width:min(100vw, 1100px); aspect-ratio:16/9; container-type:inline-size; overflow:hidden; background:#f6f5f1;
+           --ink:#1c1c1c; --paper:#fdfcf8; --cap:rgba(253,252,248,.84); }
+  @media (min-width:1120px){ #stage { border-radius:14px; box-shadow:0 10px 30px rgba(60,50,40,.2);} }
+  svg { position:absolute; inset:0; width:100%; height:100%; display:block; color:#1c1c1c; --paper:#fdfcf8; }
+  .pp { fill:var(--paper); }
+  .win { cursor:pointer; outline:none; }
+  .win .ring { opacity:0; transition:opacity .2s; }
+  .win:hover .ring, .win:focus-visible .ring, .win.sel .ring { opacity:.9; }
+  #tag { position:absolute; left:3cqw; top:2.4cqw; color:var(--ink); pointer-events:none; transition:opacity .3s; }
+  #tag b { display:block; font-size:2.2cqw; font-weight:700; letter-spacing:.02em; }
+  #tag small { display:block; font-size:1.3cqw; opacity:.65; margin-top:.2cqw; }
+  #cap { position:absolute; left:50%; bottom:2.4cqw; transform:translateX(-50%); max-width:88%; padding:.7cqw 2cqw; border-radius:2cqw;
+         background:var(--cap); color:var(--ink); font-size:2.3cqw; font-weight:600; white-space:nowrap; pointer-events:none; opacity:0; }
+  #scrim { position:absolute; left:0; right:0; bottom:0; height:40%; background:linear-gradient(to top, rgba(12,17,36,.82), rgba(12,17,36,0)); opacity:0; pointer-events:none; }
+  #fin { position:absolute; left:0; right:0; bottom:3cqw; text-align:center; color:#f6efdc; opacity:0; pointer-events:none; }
+  #fin h1 { margin:0; font-size:4cqw; font-weight:800; letter-spacing:.08em; }
+  #fin p  { margin:.5cqw 0 0; font-size:2cqw; font-weight:500; }
+  #fin small { display:block; margin-top:.6cqw; font-size:1.4cqw; opacity:.7; }
+  #ctl { display:flex; align-items:center; gap:10px; width:min(100vw - 24px, 640px); color:#6b645a; font-size:12px; padding-bottom:max(8px, env(safe-area-inset-bottom)); }
+  #ctl button { border:1px solid #c4bdb0; background:#f7f3ea; color:#4b4741; border-radius:8px; width:34px; height:28px; font-size:13px; line-height:1; cursor:pointer; padding:0; }
+  #ctl .txt { width:auto; padding:0 8px; font-size:11px; }
+  #ctl input { flex:1; accent-color:#8a6a55; min-width:0; }
+  #tm { min-width:64px; text-align:right; font-variant-numeric:tabular-nums; }
+  body.clean #ctl { display:none; }
+  body.clean { cursor:none; }
+  #uihit { position:fixed; right:0; bottom:0; width:44px; height:44px; display:none; }
+  body.clean #uihit { display:block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="s" viewBox="0 0 960 540" preserveAspectRatio="xMidYMid slice" aria-label="고래영어학원의 하루"></svg>
+  <div id="tag"><b id="tagT"></b><small>장면 연출용 시각</small></div>
+  <div id="cap"></div>
+  <div id="scrim"></div>
+  <div id="fin"><h1>고래영어학원</h1><p>수업은 선생님과 직접, 복습은 집에서 내 앱으로</p><small>교육청 등록 2019-14호</small></div>
+</div>
+<div id="ctl">
+  <button id="pp" aria-label="재생/일시정지">⏸</button>
+  <input id="rng" type="range" min="0" max="22" step="0.01" value="0" aria-label="시간">
+  <span id="tm">0:00 / 0:22</span>
+  <button id="hide" class="txt" aria-label="조작 숨기기">숨김</button>
+</div>
+<div id="uihit" aria-hidden="true"></div>
+<script>/*__BUNDLE__*/</script>
+</body>
+</html>
