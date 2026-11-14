@@ -34,10 +34,11 @@ export function makeFigure(parent, o) {
   if (o.legs) {
     legs = [0, 1].map(() => ({ l: solid(limb(g, 4.2), o.trouser || '#444a58'), shoe: blot(g) }));
   }
+  const lower = o.dynamic ? el('path', { fill: coat, stroke: 'currentColor', 'stroke-width': PEN, 'stroke-linejoin': 'round' }, g) : null;
   const armB = solid(limb(g, 3.6), coat);
   const handB = el('ellipse', { rx: 1.8, ry: 1.5, fill: SKIN, stroke: 'currentColor', 'stroke-width': PEN * 0.7 }, g);
   const upper = el('g', {}, g);
-  const torso = el('path', { d: o.long ? LONG : SHORT, fill: coat, stroke: 'currentColor', 'stroke-width': PEN, 'stroke-linejoin': 'round' }, upper);
+  const torso = el('path', { d: o.long && !o.dynamic ? LONG : SHORT, fill: coat, stroke: 'currentColor', 'stroke-width': PEN, 'stroke-linejoin': 'round' }, upper);
   const neck = limb(upper, 3.2); neck.draw([[40.6, 44], [40.8, 37]], [0.2, 0.2]);
   const head = el('g', {}, upper);
   el('ellipse', { cx: 41, cy: o.child ? 33 : 32, rx: o.child ? 5.5 : 4.2, ry: o.child ? 6.3 : 5.1, fill: SKIN, stroke: 'currentColor', 'stroke-width': PEN }, head);
@@ -46,6 +47,7 @@ export function makeFigure(parent, o) {
   const handF = el('ellipse', { rx: 1.8, ry: 1.5, fill: SKIN, stroke: 'currentColor', 'stroke-width': PEN * 0.7 }, g);
   const finger = pen(g, PEN * 0.8);
   const clothes = [torso, armB.g.querySelector('path'), armF.g.querySelector('path')];
+  if (lower) clothes.push(lower);
 
   return {
     g, nodes: { clothes, legs: legs ? legs.map((l) => l.l.g.querySelector('path')) : [] }, coat, trouser: o.trouser || '#444a58', place: (X, Y, dir = 1, s = 0.5) => { place(g, X, Y, dir, s); },
@@ -63,6 +65,13 @@ export function makeFigure(parent, o) {
       handF.setAttribute('cx', tF[0]); handF.setAttribute('cy', tF[1]); handB.setAttribute('cx', tB[0]); handB.setAttribute('cy', tB[1]);
       if (point) { const dx = tF[0] - eF[0], dy = tF[1] - eF[1], l = Math.hypot(dx, dy) || 1; finger.setAttribute('d', `M${tF[0]} ${tF[1]} l${(dx / l * 3.6).toFixed(2)} ${(dy / l * 3.6).toFixed(2)}`); }
       else finger.setAttribute('d', '');
+      if (lower && feet) {
+        // the coat hangs from the waist and opens and closes with the stride (drawn around knees and ankles)
+        const [a0, a1] = [feet[0], feet[1]], fr = a0.ankle[0] >= a1.ankle[0] ? [a0, a1] : [a1, a0];
+        const kF = fr[0].knee, aF = fr[0].ankle, aR = fr[1].ankle, kR = fr[1].knee, wy = 69 + bob;
+        const kx = Math.max(kF[0] + 2.6, 47.6), hemF = [Math.max(46.8, aF[0] + 3.6), 101 + bob * 0.3], hemR = [Math.min(33.4, aR[0] - 2.2), 101.4 + bob * 0.3];
+        lower.setAttribute('d', `M35 ${wy} L47.4 ${wy} C48.4 ${wy + 9} ${kx} ${kF[1] - 9} ${kx} ${kF[1]} Q${kx - 0.3} ${(kF[1] + hemF[1]) / 2 + 1} ${hemF[0]} ${hemF[1]} Q${(hemF[0] + hemR[0]) / 2} ${hemF[1] + 1.2} ${hemR[0]} ${hemR[1]} Q${Math.min(32.6, hemR[0] + 1.4)} ${wy + 16} 35 ${wy}Z`);
+      }
       if (legs) {
         if (feet) feet.forEach((ft, i) => { legs[i].l.draw([[40, 72 + bob], ft.knee, ft.ankle], [0.4, 0.4]); shoe(legs[i].shoe, ft.ankle, ft.pitch); });
         else {
