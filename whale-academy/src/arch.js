@@ -14,6 +14,24 @@ export const B = (g, d) => { const n = blot(g); n.setAttribute('d', d); return n
 export const rect = (x0, y0, x1, y1) => `M${x0} ${y0} L${x1} ${y0} L${x1} ${y1} L${x0} ${y1}Z`;
 export const oval = (cx, cy, rx, ry) => `M${(cx - rx).toFixed(2)} ${cy.toFixed(2)} a${rx} ${ry} 0 1 0 ${2 * rx} 0 a${rx} ${ry} 0 1 0 ${-2 * rx} 0Z`;
 
+/** Flat-colour fills (roofs, awnings, clothes). Re-tinted toward night each frame by main.js. */
+export const tints = [];
+export function colored(node, colour) { node.classList.remove('pp'); node.setAttribute('fill', colour); tints.push([node, colour]); return node; }
+
+export function signboard(g, x0, y0, x1, y1, label, size) {
+  S(g, rect(x0, y0, x1, y1), SP * 0.9); P(g, rect(x0 + 2, y0 + 2, x1 - 2, y1 - 2), SP * 0.4);
+  text(g, (x0 + x1) / 2, (y0 + y1) / 2 + 0.5, label, size, { weight: 800, spacing: 1.2 });
+}
+export function awning(g, x0, x1, y, h, c1, c2, n = 8) {
+  const w = (x1 - x0) / n;
+  for (let i = 0; i < n; i++) { const a = x0 + i * w, b = a + w; colored(S(g, `M${a} ${y} L${b} ${y} L${b + 1.2} ${y + h} Q${(a + b) / 2 + 0.6} ${y + h + 3} ${a + 1.2} ${y + h}Z`, SP * 0.7), i % 2 ? c2 : c1); }
+}
+export function books(g, x, y, w, cols) {
+  let cx = x;
+  for (let i = 0; cx < x + w - 3; i++) { const bw = 3 + (i * 5) % 3, bh = 8 + (i * 7) % 6; colored(S(g, rect(cx, y - bh, cx + bw, y), SP * 0.5), cols[i % cols.length]); cx += bw + 0.5; }
+  P(g, `M${x - 1} ${y} h${w + 2}`, SP * 0.6);
+}
+
 const SERIF = '"Noto Serif KR","Nanum Myeongjo","Apple SD Gothic Neo","Malgun Gothic",serif';
 export function text(g, x, y, s, size, { weight = 700, anchor = 'middle', family = SERIF, spacing = 0 } = {}) {
   const n = el('text', { x, y, 'font-size': size, 'font-family': family, 'font-weight': weight, fill: 'currentColor', 'text-anchor': anchor, 'dominant-baseline': 'central', 'letter-spacing': spacing }, g);
@@ -22,10 +40,11 @@ export function text(g, x, y, s, size, { weight = 700, anchor = 'middle', family
 }
 
 /** Tiled roof: sweeping eave, round tile ends, tile channels up to the ridge, rafters, stacked ridge with end tiles. */
-export function roof(g, { x0, x1, eave, ridge, inset, tile = 5.6, sori = 2.8, depth = 2.6, oni = true, rafters = true }) {
+export function roof(g, { x0, x1, eave, ridge, inset, tile = 5.6, sori = 2.8, depth = 2.6, oni = true, rafters = true, fill = null }) {
   const cx = (x0 + x1) / 2;
   const eaveY = (x) => eave - sori * Math.pow(Math.abs(x - cx) / ((x1 - x0) / 2), 2.2);
-  S(g, `M${x0} ${eaveY(x0)} Q${cx} ${eave + sori * 0.6} ${x1} ${eaveY(x1)} L${x1 - inset} ${ridge} L${x0 + inset} ${ridge}Z`);
+  const body = S(g, `M${x0} ${eaveY(x0)} Q${cx} ${eave + sori * 0.6} ${x1} ${eaveY(x1)} L${x1 - inset} ${ridge} L${x0 + inset} ${ridge}Z`);
+  if (fill) colored(body, fill);
   const ch = [], ends = [];
   for (let x = x0 + tile * 0.8; x < x1 - tile * 0.4; x += tile) {
     const t = (x - x0) / (x1 - x0), ey = eaveY(x) - 0.4;

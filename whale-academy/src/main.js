@@ -1,7 +1,8 @@
 // 고래영어학원의 하루 — one fixed street elevation; only light, shadow and the small lessons change.
 import { el, f, inkDefs, pen } from '../lib/ink.ts';
-import { palette, applyPalette, rgb, mix, toRGB } from '../lib/daynight.ts';
-import { SP, P as Pn, S as Sh, B as Bl, rect, oval, lerp, clamp, smooth, ease, roof, koshi, mushiko, shoji, whale, text } from './arch.js';
+import { palette, applyPalette, rgb, mix, toRGB, nightTint } from '../lib/daynight.ts';
+import { SP, P as Pn, S as Sh, B as Bl, rect, oval, lerp, clamp, smooth, ease, roof, koshi, mushiko, shoji, whale, text, tints, colored, signboard, awning, books } from './arch.js';
+import { buildWalkers } from './walkers.js';
 import { buildPhonics, buildNews, buildReading } from './lessons.js';
 
 const $ = (id) => document.getElementById(id);
@@ -35,26 +36,33 @@ const clouds = el('g', { fill: 'none', stroke: 'currentColor', 'stroke-width': 0
 Pn(clouds, 'M130 96 h86 q12 0 14 -6 M150 103 h50 M520 70 h96 q12 0 12 -5 M542 77 h48 M330 150 h70 M352 157 h34 M700 140 h80', 0.7);
 Array.from(clouds.children).forEach((c) => { c.setAttribute('fill', 'none'); });
 
-// ---------------------------------------------------------------- side buildings (low contrast, low saturation)
-const sides = el('g', { opacity: 0.5 }, scene);
-function house(g, { x0, x1, eave, ridge, inset, win, lattice, tile = 5.8 }) {
+// ---------------------------------------------------------------- side buildings (quieter than the academy)
+const sides = el('g', { opacity: 0.6 }, scene);
+function house(g, { x0, x1, eave, ridge, inset, win, tile = 5.8, roofC }) {
   Sh(g, rect(x0 + 4, eave + 2, x1 - 4, BASE), SP);
-  roof(g, { x0: x0 - 10, x1: x1 + 10, eave, ridge, inset, tile });
+  roof(g, { x0: x0 - 10, x1: x1 + 10, eave, ridge, inset, tile, fill: roofC });
   Sh(g, rect(x0 + 2, eave + 6, x1 - 2, eave + 12), SP * 0.8);
   win.forEach(([a, b, c, d, kind]) => (kind === 's' ? shoji(g, a, b, c, d, 3, 2) : mushiko(g, a, b, c, d)));
-  if (lattice) koshi(g, lattice[0], lattice[1], 386, BASE);
 }
-house(sides, { x0: 56, x1: 252, eave: 300, ridge: 248, inset: 40, win: [[74, 320, 118, 356], [140, 320, 184, 356]], lattice: [74, 160] });
-Sh(sides, rect(196, 386, 238, BASE), SP); Pn(sides, 'M217 386 V430', SP * 0.5);
-house(sides, { x0: -70, x1: 40, eave: 314, ridge: 268, inset: 22, win: [[-30, 332, 8, 366]], lattice: null });
-house(sides, { x0: 708, x1: 904, eave: 296, ridge: 240, inset: 42, win: [[728, 314, 774, 350, 's'], [796, 314, 842, 350, 's'], [856, 330, 890, 360]], lattice: [740, 850] });
-Sh(sides, rect(858, 386, 896, BASE), SP);
-house(sides, { x0: 920, x1: 1040, eave: 310, ridge: 262, inset: 24, win: [[940, 328, 980, 362]], lattice: null });
+function shopFront(g, x0, x1, sign, ac, fill) {
+  signboard(g, x0 + 6, 358, x1 - 6, 376, sign, 11);
+  awning(g, x0 + 2, x1 - 2, 380, 11, ac[0], ac[1], 9);
+  Sh(g, rect(x0 + 10, 396, x1 - 10, BASE - 3), SP);
+  fill(g, x0 + 10, x1 - 10);
+}
+const bookShelf = (g, a, b) => { books(g, a + 4, 410, b - a - 8, ['#a5483c', '#3f6a73', '#c79a3b', '#5d5a86', '#7a4a3a']); books(g, a + 4, 426, b - a - 8, ['#5d5a86', '#c79a3b', '#a5483c', '#3f6a73']); };
+const fruitStall = (g, a, b) => { for (let x = a + 8; x < b - 6; x += 12) { colored(Sh(g, oval(x, 420, 5, 5), SP * 0.5), (x / 12 | 0) % 2 ? '#d96a3c' : '#b3412d'); colored(Sh(g, oval(x + 4, 414, 4, 4), SP * 0.5), '#8aa24a'); } Pn(g, `M${a + 2} 426 H${b - 2}`, SP * 0.6); };
+house(sides, { x0: 56, x1: 252, eave: 300, ridge: 248, inset: 40, win: [[74, 316, 118, 352], [140, 316, 184, 352]], roofC: '#8a5a47' });
+shopFront(sides, 56, 252, '책방 · BOOKS', ['#c79a3b', '#fbf6ea'], bookShelf);
+house(sides, { x0: -70, x1: 40, eave: 314, ridge: 268, inset: 22, win: [[-30, 332, 8, 366]], roofC: '#5c6670' });
+house(sides, { x0: 708, x1: 904, eave: 296, ridge: 240, inset: 42, win: [[728, 314, 774, 350, 's'], [796, 314, 842, 350, 's'], [856, 330, 890, 360]], roofC: '#3f6a73' });
+shopFront(sides, 708, 904, '과일 · FRUIT', ['#4f7a55', '#fbf6ea'], fruitStall);
+house(sides, { x0: 920, x1: 1040, eave: 310, ridge: 262, inset: 24, win: [[940, 328, 980, 362]], roofC: '#7a4a3a' });
 
 // ---------------------------------------------------------------- the academy
 const A = el('g', {}, scene);
 Sh(A, rect(270, 198, 690, BASE), SP);
-roof(A, { x0: 246, x1: 714, eave: 198, ridge: 122, inset: 84, tile: 6.6, sori: 4, depth: 3.2 });
+roof(A, { x0: 246, x1: 714, eave: 198, ridge: 122, inset: 84, tile: 6.6, sori: 4, depth: 3.2, fill: '#4f7a7e' });
 // signboard + whale emblem
 Pn(A, 'M384 201 V207 M576 201 V207', SP);
 Sh(A, rect(372, 207, 588, 243), SP * 1.1);
@@ -80,7 +88,8 @@ const rooms = WX.map((x, i) => {
   return L;
 });
 // lower shed roof, lattice and the entrance
-roof(A, { x0: 256, x1: 704, eave: 394, ridge: 378, inset: 10, tile: 6, sori: 1.6, depth: 2, oni: false });
+roof(A, { x0: 256, x1: 704, eave: 394, ridge: 378, inset: 10, tile: 6, sori: 1.6, depth: 2, oni: false, fill: '#8a5a47' });
+awning(A, 446, 514, 398, 7, '#4f7a7e', '#fbf6ea', 6);
 koshi(A, 270, 432, 398, BASE); koshi(A, 528, 690, 398, BASE);
 Sh(A, rect(444, 398, 516, BASE), SP);
 const doorPane = el('path', { d: rect(449, 403, 511, 428), stroke: 'currentColor', 'stroke-width': SP * 0.7 }, A);
@@ -110,6 +119,18 @@ const lampRefs = lampX.map((x) => {
   Pn(g, `M${x - 16} 300 v10 M${x - 8} 300 v10`, SP * 0.4);
   return { cx: x - 12, cy: 304, body };
 });
+
+
+// ---------------------------------------------------------------- people on the sidewalk, and the academy shuttle on the road
+const walkers = buildWalkers(scene);
+const bus = el('g', {}, scene);
+colored(Sh(bus, 'M-56 -36 Q-56 -45 -47 -45 H40 Q50 -45 54 -37 L61 -21 V-8 H-56Z', SP), '#e0b030');
+[-48, -35, -22, -9, 4].forEach((x) => Sh(bus, rect(x, -40, x + 10, -27), SP * 0.6));
+Sh(bus, 'M20 -40 H36 L42 -28 H20Z', SP * 0.6);
+Pn(bus, 'M-56 -20 H61', SP * 0.5);
+const busWhale = whale(bus, -18, -12, 0.55, SP); 
+[-34, 36].forEach((x) => { Bl(bus, oval(x, -7, 8, 8)); Sh(bus, oval(x, -7, 3.2, 3.2), SP * 0.5); });
+const busGlow = el('ellipse', { rx: 46, ry: 16, fill: 'url(#wg)', opacity: 0 }, glowL);
 
 // ---------------------------------------------------------------- light layer
 const glowWin = WX.map((x) => el('ellipse', { cx: x + WWID / 2, cy: WY + WHT / 2, rx: 92, ry: 88, fill: 'url(#wg)', opacity: 0 }, glowL));
@@ -177,6 +198,10 @@ function render() {
   const Lb = 120 * k, Wd = 44 * k;
   shadow.setAttribute('d', `M-10 ${BASE} L${W + 10 + Lb} ${BASE} L${W + 10} ${BASE + Wd} L${-10 - Lb} ${BASE + Wd}Z`); shadow.setAttribute('opacity', 0.1 * (k > 0 ? 1 : 0));
   lampX.forEach((x, i) => { lampShadow[i].setAttribute('d', `M${x} 460 l${(-150 * k).toFixed(1)} ${(14 * k).toFixed(1)}`); lampShadow[i].setAttribute('opacity', 0.09); });
+  tints.forEach(([n, c]) => n.setAttribute('fill', nightTint(c, P, 0.6)));
+  walkers.update(T);
+  const bx = ((-160 + 52 * T) % 1280 + 1280) % 1280 - 100;
+  bus.setAttribute('transform', `translate(${bx.toFixed(1)} 503) scale(0.8)`); busGlow.setAttribute('cx', bx + 56); busGlow.setAttribute('cy', 492); busGlow.setAttribute('opacity', lampOn * 0.6);
   // lessons (pure functions of time)
   rooms[0].update(T, T); rooms[1].update(T - START[1], T); rooms[2].update(T - START[2], T);
   // overlays

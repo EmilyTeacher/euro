@@ -48,14 +48,14 @@ export function makeFigure(parent, o) {
   const clothes = [torso, armB.g.querySelector('path'), armF.g.querySelector('path')];
 
   return {
-    g, place: (X, Y, dir = 1, s = 0.5) => { place(g, X, Y, dir, s); },
+    g, nodes: { clothes, legs: legs ? legs.map((l) => l.l.g.querySelector('path')) : [] }, coat, trouser: o.trouser || '#444a58', place: (X, Y, dir = 1, s = 0.5) => { place(g, X, Y, dir, s); },
     tint(c) { torso.setAttribute('fill', c); clothes[1].setAttribute('fill', c); clothes[2].setAttribute('fill', c); },
-    draw({ lean = 0, tilt = 0, hF = null, hB = null, point = false }) {
+    draw({ lean = 0, tilt = 0, hF = null, hB = null, point = false, feet = null, bob = 0 }) {
       const a = lean * RAD, ca = Math.cos(a), sa = Math.sin(a);
       const rot = (p) => { const dx = p[0] - 40, dy = p[1] - 72; return [40 + dx * ca - dy * sa, 72 + dx * sa + dy * ca]; };
-      upper.setAttribute('transform', `rotate(${lean.toFixed(2)} 40 72)`);
+      upper.setAttribute('transform', `translate(0 ${bob.toFixed(2)}) rotate(${lean.toFixed(2)} 40 72)`);
       head.setAttribute('transform', `rotate(${tilt.toFixed(2)} 40.7 40)`);
-      const sF = rot([42.2, 47.5]), sB = rot([38.4, 47.5]);
+      const sF = rot([42.2, 47.5]), sB = rot([38.4, 47.5]); sF[1] += bob; sB[1] += bob;
       const rest = (s, dx) => [s[0] + dx, s[1] + 35];
       const tF = reachTo(sF, hF || rest(sF, 2.4), L1 + L2), tB = reachTo(sB, hB || rest(sB, -1.2), L1 + L2);
       const eF = joint(sF, tF, L1, L2, -1), eB = joint(sB, tB, L1, L2, -1);
@@ -64,11 +64,11 @@ export function makeFigure(parent, o) {
       if (point) { const dx = tF[0] - eF[0], dy = tF[1] - eF[1], l = Math.hypot(dx, dy) || 1; finger.setAttribute('d', `M${tF[0]} ${tF[1]} l${(dx / l * 3.6).toFixed(2)} ${(dy / l * 3.6).toFixed(2)}`); }
       else finger.setAttribute('d', '');
       if (legs) {
-        const hip = [40, 72];
-        [[37.5, 118.4], [43.5, 118.4]].forEach((ank, i) => {
-          legs[i].l.draw([hip, joint(hip, ank, 23, 23, 1), ank], [0.4, 0.4]);
-          shoe(legs[i].shoe, ank, 0);
-        });
+        if (feet) feet.forEach((ft, i) => { legs[i].l.draw([[40, 72 + bob], ft.knee, ft.ankle], [0.4, 0.4]); shoe(legs[i].shoe, ft.ankle, ft.pitch); });
+        else {
+          const hip = [40, 72];
+          [[37.5, 118.4], [43.5, 118.4]].forEach((ank, i) => { legs[i].l.draw([hip, joint(hip, ank, 23, 23, 1), ank], [0.4, 0.4]); shoe(legs[i].shoe, ank, 0); });
+        }
       }
       return { sF, tF };
     },
