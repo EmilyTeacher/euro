@@ -86,13 +86,13 @@ export function buildNews(parent) {
   flat(g, rect(8, 12, 32, 38), PAPERY, 0.7);
   Pn(g, 'M12 28 Q14 20 22 21 Q28 22 29 26 Q31 24 30 22 M13 30 Q20 33 28 29', 0.6);
   // the newspaper, standing on the desk
-  const sheet = flat(g, rect(62, 46, 98, 80), PAPERY, 0.8);
-  flat(g, rect(65, 49, 95, 55.5), 'currentColor', 0.4);
-  const lines = []; for (let i = 0; i < 5; i++) lines.push(`M65 ${59.5 + i * 4.3} H95`);
+  const sheet = flat(g, rect(64, 46, 92, 80), PAPERY, 0.8);
+  flat(g, rect(67, 49, 89, 55.5), 'currentColor', 0.4);
+  const lines = []; for (let i = 0; i < 5; i++) lines.push(`M67 ${59.5 + i * 4.3} H89`);
   Pn(g, lines.join(' '), 0.5);
-  const under = Pn(g, 'M65 70.2 H65', 1.3); under.setAttribute('stroke', ACC);
+  const under = Pn(g, 'M67 70.2 H67', 1.3); under.setAttribute('stroke', ACC);
   const child = makeFigure(g, { coat: '#c98a7c', hair: 'bob', child: false });
-  const CX = 46, CS = 0.74, CY = 80 + CS * 48;
+  const CX = 50, CS = 0.5, CY = 80 + CS * 48;
   child.place(CX, CY, 1, CS);
   desk(g, 4, 108, 78);
   // the sentence, spoken
@@ -104,16 +104,16 @@ export function buildNews(parent) {
     update(u, T) {
       const REST = [46, 76];
       const k1 = ease(seg(u, 1.0, 3.4));
-      let fing = lp(REST, [65, 67.5], ease(seg(u, 0.4, 1.0)));
-      if (u >= 1.0) fing = [lerp(65, 82, k1), 67.5];
-      if (u >= 3.5) fing = lp([82, 67.5], REST, ease(seg(u, 3.5, 4.0)));
+      let fing = lp(REST, [67, 67.5], ease(seg(u, 0.4, 1.0)));
+      if (u >= 1.0) fing = [lerp(67, 78, k1), 67.5];
+      if (u >= 3.5) fing = lp([78, 67.5], REST, ease(seg(u, 3.5, 4.0)));
       const reading = u < 3.6 && u > .2;
       const lift = ease(seg(u, 3.7, 4.3));
       child.draw({ lean: reading ? 8 : lerp(8, 1, lift), tilt: lerp(reading ? 14 : 14, -4, lift) + Math.sin(T * 1.7) * 0.5, hF: toFig(fing[0], fing[1], CX, CY, 1, CS), point: reading });
-      under.setAttribute('d', `M65 70.2 H${(65 + (fing[0] - 65) * (u < 3.6 ? 1 : 0)).toFixed(2)}`);
-      if (u >= 3.5) under.setAttribute('d', 'M65 70.2 H82');
+      under.setAttribute('d', `M67 70.2 H${(67 + (fing[0] - 67) * (u < 3.6 ? 1 : 0)).toFixed(2)}`);
+      if (u >= 3.5) under.setAttribute('d', 'M67 70.2 H78');
       bub.setAttribute('opacity', seg(u, 4.4, 4.9));
-      bub.setAttribute('transform', `translate(8 ${(1 - ease(seg(u, 4.4, 4.9))) * 3})`);
+      bub.setAttribute('transform', `translate(8 ${8 + (1 - ease(seg(u, 4.4, 4.9))) * 3})`);
     },
   };
 }
@@ -134,7 +134,7 @@ export function buildReading(parent) {
   const check = Pn(g, 'M39 48 l2.6 2.8 l5 -6.4', 1.3); check.setAttribute('stroke', ACC);
   const student = makeFigure(g, { coat: '#7b86a8', hair: 'short', child: false });
   const teacher = makeFigure(g, { coat: '#4f7a7e', hair: 'bun', long: true, legs: true, trouser: '#3b4250' });
-  const SX = 34, SS = 0.68, SY = 80 + SS * 48, TX = 94, TY = 100, TS = 0.68;
+  const SX = 40, SS = 0.5, SY = 80 + SS * 48, TX = 94, TY = 100, TS = 0.68;
   student.place(SX, SY, 1, SS); teacher.place(TX, TY, -1, TS);
   desk(g, 4, 84, 78);
   return {
